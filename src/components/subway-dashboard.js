@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import ToggleSwitchWithLabel from "./shared/label-toggle-switch";
+import SubwayControls from "./subway/subway-controls";
 
 export default class SubwayDashboard extends React.Component {
   static propTypes = {
@@ -57,12 +57,12 @@ const Station = ({ stationData }) => {
     </span>
   );
   return (
-    <div className="card">
+    <div className="card station">
       <div className="card-header text-center h3">
         {name} {routesDisplay}
       </div>
       <div className="card-body">
-        <div class="card-group">
+        <div className="card-group">
           {northBound}
           {southBound}
         </div>
@@ -74,11 +74,11 @@ const Station = ({ stationData }) => {
 const RouteList = ({ name, trains }) => {
   const currentTime = Date.now();
   const trainDisplay = trains.map(train => {
-    return <Train {...train} />;
+    return <Train {...train} key={`${train.route}${train.time}`} />;
   });
   return (
     <div className="card routeList">
-      <div class="card-header lead">{name}</div>
+      <div className="card-header lead">{name}</div>
       <div className="card-body">{trainDisplay}</div>
     </div>
   );
@@ -124,35 +124,4 @@ const TrainTime = ({ time }, context) => {
 
 TrainTime.contextTypes = {
   comparisonTime: PropTypes.number
-};
-
-const SubwayControls = ({ toggleStyle, activeStyle, getCurrentLocation }) => {
-  return (
-    <nav className="navbar navbar-expand-sm">
-      <a className="navbar-brand">Controls</a>
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon" />
-      </button>
-      <div className="collapse navbar-collapse" id="navbarNav">
-        <ul className="navbar-nav">
-          <ToggleSwitchWithLabel
-            checked={activeStyle}
-            onChange={event => {
-              toggleStyle();
-            }}
-            prelabel="Light"
-            postlabel="Dark"
-          />
-        </ul>
-      </div>
-    </nav>
-  );
 };

@@ -1,5 +1,11 @@
 @import "./css/toggle-switch.css";
 
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -123,14 +129,30 @@
 }
 
 .subwayContainer {
+  .station {
+    > .card-header {
+      box-shadow: 0 5px 6px -3px #333;
+    }
+  }
+
+  .routeList {
+    .card-header {
+      font-weight: bold;
+    }
+  }
+
   &.subwayContainer--light {
+    .station {
+      > .card-header {
+        background: #ddd;
+      }
+    }
     .routeList {
       .card-body {
         padding: 0;
       }
 
       .card-header {
-        font-weight: bold;
         color: white;
         background: #555;
         border-radius: 0;
@@ -147,10 +169,27 @@
     }
   }
   &.subwayContainer--dark {
+    .station {
+      > .card-header {
+        background: #666;
+        color: white;
+      }
+    }
+
     .routeList {
+      .card-header {
+        background: #ddd;
+        border-radius: 0;
+      }
       .card-body {
         background-color: #222;
         color: #ccc;
+      }
+
+      &:first-child {
+        .card-header {
+          border-right: 1px solid #666;
+        }
       }
     }
     .trainStatus-time {
