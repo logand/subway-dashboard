@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import ToggleSwitchWithLabel from "./shared/label-toggle-switch";
 
 export default class SubwayDashboard extends React.Component {
   static propTypes = {
@@ -8,7 +9,8 @@ export default class SubwayDashboard extends React.Component {
 
   state = {
     stations: this.props.subwayData.data,
-    lastUpdated: this.props.subwayData.updated
+    lastUpdated: this.props.subwayData.updated,
+    isDark: false
   };
 
   static childContextTypes = {
@@ -21,11 +23,27 @@ export default class SubwayDashboard extends React.Component {
     };
   }
 
+  toggleStyle = () => {
+    this.setState({ darkStyle: !this.state.darkStyle });
+  };
+
   render() {
+    const { darkStyle } = this.state;
+    const styleClass = darkStyle
+      ? "subwayContainer--light"
+      : "subwayContainer--dark";
     const stationsDisplay = this.state.stations.map(station => {
       return <Station stationData={station} key={station.id} />;
     });
-    return <div className="subway-container">{stationsDisplay}</div>;
+    return (
+      <div className={`subwayContainer ${styleClass}`}>
+        <SubwayControls
+          toggleStyle={this.toggleStyle}
+          activeStyle={!this.state.darkStyle}
+        />
+        {stationsDisplay}
+      </div>
+    );
   }
 }
 
@@ -40,7 +58,7 @@ const Station = ({ stationData }) => {
   );
   return (
     <div className="card">
-      <div className="card-header text-center">
+      <div className="card-header text-center h3">
         {name} {routesDisplay}
       </div>
       <div className="card-body">
@@ -60,11 +78,8 @@ const RouteList = ({ name, trains }) => {
   });
   return (
     <div className="card routeList">
-      <div class="card-header bg-transparent">{name}</div>
-      <div className="card-body">
-        <h5 className="card-title" />
-        {trainDisplay}
-      </div>
+      <div class="card-header lead">{name}</div>
+      <div className="card-body">{trainDisplay}</div>
     </div>
   );
 };
@@ -109,4 +124,35 @@ const TrainTime = ({ time }, context) => {
 
 TrainTime.contextTypes = {
   comparisonTime: PropTypes.number
+};
+
+const SubwayControls = ({ toggleStyle, activeStyle, getCurrentLocation }) => {
+  return (
+    <nav className="navbar navbar-expand-sm">
+      <a className="navbar-brand">Controls</a>
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span className="navbar-toggler-icon" />
+      </button>
+      <div className="collapse navbar-collapse" id="navbarNav">
+        <ul className="navbar-nav">
+          <ToggleSwitchWithLabel
+            checked={activeStyle}
+            onChange={event => {
+              toggleStyle();
+            }}
+            prelabel="Light"
+            postlabel="Dark"
+          />
+        </ul>
+      </div>
+    </nav>
+  );
 };
