@@ -1,26 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
-import SubwayControls from "./subway/subway-controls";
-import StationDisplay from "./subway/station-display";
-import subwayData from "../data/location-example.json";
-import { geolocated, geoPropTypes } from "react-geolocated";
+import SubwayControls from "./subway-controls";
+import StationDisplay from "./station-display";
+import subwayData from "../../data/location-example.json";
 
 class SubwayDashboard extends React.Component {
   static propTypes = {
     useLocalData: PropTypes.bool,
-    ...geoPropTypes
+    locationEnabled: PropTypes.bool.isRequired,
+    hasLocation: PropTypes.bool.isRequired,
+    location: PropTypes.shape({
+      latitude: PropTypes.number,
+      longitude: PropTypes.number
+    })
   };
 
   state = {
     stations: [],
     lastUpdated: null,
-    isDark: false,
-    locationEnabled: false,
-    hasLocation: false,
-    location: {
-      latitude: null,
-      longitude: null
-    }
+    isDark: false
   };
 
   static childContextTypes = {
@@ -33,25 +31,28 @@ class SubwayDashboard extends React.Component {
     };
   }
 
-  componentWillMount() {
-    if (this.props.isGeolocationEnabled) {
-      this.setState({ locationEnabled: true });
+  componentDidMount() {
+    if (this.props.useLocalData) {
+      this.setState({
+        stations: subwayData.data,
+        lastUpdated: subwayData.updated
+      });
     }
   }
 
   componentWillReceiveProps(nextProps) {
+    const oldLatitude = this.props.latitude;
+    const oldLongitude = this.props.longitude;
+    const {
+      hasLocation,
+      locationEnabled,
+      location: { latitude, longitude }
+    } = nextProps;
     if (
-      this.state.hasLocation === false &&
-      nextProps.coords !== null &&
-      this.props.isGeolocationEnabled
+      locationEnabled &&
+      hasLocation &&
+      (oldLatitude !== latitude || oldLongitude !== longitude)
     ) {
-      const { coords: { latitude, longitude } } = nextProps;
-      this.updateLocation(true, latitude, longitude);
-    }
-  }
-
-  updateLocation(hasLocation, latitude, longitude) {
-    if (hasLocation) {
       this.updateStations(latitude, longitude);
     }
   }
@@ -60,12 +61,7 @@ class SubwayDashboard extends React.Component {
     this.fetchLocalStations(latitude, longitude).then(stations => {
       this.setState({
         stations: stations.data,
-        lastUpdated: stations.updated,
-        hasLocation: true,
-        location: {
-          latitude: latitude,
-          longitude: longitude
-        }
+        lastUpdated: stations.updated
       });
     });
   }
@@ -83,29 +79,13 @@ class SubwayDashboard extends React.Component {
     return trains;
   };
 
-  setCurrentLocation = (latitude, longitude) => {};
-
-  componentDidMount() {
-    if (this.props.useLocalData) {
-      this.setState({
-        stations: subwayData.data,
-        lastUpdated: subwayData.updated
-      });
-    }
-  }
-
   toggleStyle = () => {
     this.setState({ darkStyle: !this.state.darkStyle });
   };
 
   render() {
-    const {
-      stations,
-      darkStyle,
-      hasLocation,
-      locationEnabled,
-      location
-    } = this.state;
+    const { stations, darkStyle } = this.state;
+    const { locationEnabled, hasLocation, location } = this.props;
     const styleClass = darkStyle
       ? "subwayContainer--light"
       : "subwayContainer--dark";
@@ -124,4 +104,4 @@ class SubwayDashboard extends React.Component {
   }
 }
 
-export default geolocated()(SubwayDashboard);
+export default SubwayDashboard;
