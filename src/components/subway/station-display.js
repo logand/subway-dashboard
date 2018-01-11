@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { IconPlayArrow } from "../shared/icons";
 
 const StationDisplay = ({ stations }) => {
   const stationsDisplay = stations.map(station => {
@@ -23,8 +24,8 @@ const ValidStation = ({ stationData }) => {
   if (stationData["last_update"] === null) {
     body = <div className="text-center h3">No Data Available</div>;
   } else {
-    const northBound = <RouteList name="Uptown" trains={N} />;
-    const southBound = <RouteList name="Downtown" trains={S} />;
+    const northBound = <RouteList name="Uptown" trains={N} uptown={true} />;
+    const southBound = <RouteList name="Downtown" trains={S} uptown={false} />;
     body = (
       <div className="card-group">
         {northBound}
@@ -42,14 +43,17 @@ const ValidStation = ({ stationData }) => {
   );
 };
 
-const RouteList = ({ name, trains }) => {
+const RouteList = ({ name, trains, uptown }) => {
   const currentTime = Date.now();
   const trainDisplay = trains.map(train => {
     return <Train {...train} key={`${train.route}${train.time}`} />;
   });
   return (
     <div className="card routeList">
-      <div className="card-header lead">{name}</div>
+      <div className="card-header lead">
+        {name}
+        <IconPlayArrow className={uptown ? "north" : "south"} />
+      </div>
       <div className="card-body">{trainDisplay}</div>
     </div>
   );
@@ -78,7 +82,7 @@ const TrainTime = ({ time }, context) => {
       (trainTime.getTime() - comparisonTime) / 60000
     );
     let displayTime = Math.abs(minutesDiff);
-    if (minutesDiff < 1) {
+    if (minutesDiff <= 1 && minutesDiff > -1) {
       text = "Now";
       displayTime = null;
     } else if (minutesDiff < 0) {
