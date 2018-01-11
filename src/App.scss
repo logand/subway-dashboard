@@ -1,4 +1,7 @@
-@import "./css/toggle-switch.css";
+@import "./css/toggle-switch";
+@import "./css/weather-icons-wind.css";
+@import "./css/weather-icons.css";
+@import "./css/slider-switch.css";
 
 body {
   margin: 0;
@@ -153,8 +156,11 @@ body {
 
 .subwayDashboard {
   .station {
+    border-radius: 0;
+
     > .card-header {
       box-shadow: 0 5px 6px -3px #333;
+      border-radius: 0;
     }
 
     > .card-body {
@@ -165,8 +171,10 @@ body {
   }
 
   .routeList {
-    .card-header {
+    > .card-header {
       font-weight: bold;
+      display: inline-flex;
+      align-items: center;
     }
   }
 
@@ -219,6 +227,10 @@ body {
       .card-body {
         background-color: #222;
         color: #ccc;
+      }
+
+      .playArrowIcon {
+        fill: #aaa;
       }
 
       &:first-child {
@@ -281,4 +293,79 @@ body {
 /* Icons */
 .hasLocationArrow {
   fill: #2b80ff;
+}
+
+.playArrowIcon {
+  &.north {
+    transform: rotate(-90deg);
+  }
+
+  &.south {
+    transform: rotate(90deg);
+  }
+}
+
+.weatherIcon {
+  font-size: 6em;
+  text-align: center;
+  padding: 0.25em;
+
+  .weatherInfo {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &.weatherIcon-day {
+    background: lightblue;
+    color: yellow;
+
+    .weatherInfo {
+      color: #044398;
+    }
+  }
+
+  &.weatherIcon-night {
+    background: #13045a;
+    color: white;
+
+    .weatherInfo {
+      color: lightblue;
+    }
+  }
+}
+
+.temperatureDisplay {
+  display: flex;
+
+  .wi {
+    font-size: 29px;
+  }
+}
+
+.precipitationDisplay {
+  background-color: #d8363d;
+  color: white;
+  animation: breathing 5s ease-out infinite normal;
+
+  .wi {
+    font-size: 5em;
+  }
+}
+
+@keyframes breathing {
+  0% {
+    transform: scale(0.9);
+  }
+
+  25% {
+    transform: scale(1);
+  }
+
+  60% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(0.9);
+  }
 }

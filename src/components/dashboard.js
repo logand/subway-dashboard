@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import SubwayDashboard from "./subway/subway-dashboard";
-import WeatherDashboard from "./weather-dashboard";
+import WeatherDashboard from "./weather/weather-dashboard";
 import { geolocated, geoPropTypes } from "react-geolocated";
 
 class Dashboard extends Component {
@@ -19,14 +19,19 @@ class Dashboard extends Component {
     }
   };
 
+  static defaultProps = {
+    useLocalData: false
+  };
+
   componentWillMount() {
-    if (this.props.isGeolocationEnabled) {
+    if (!this.props.useLocalData && this.props.isGeolocationEnabled) {
       this.setState({ locationEnabled: true });
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (
+      !this.props.useLocalData &&
       this.state.hasLocation === false &&
       nextProps.coords !== null &&
       this.props.isGeolocationEnabled
@@ -53,7 +58,7 @@ class Dashboard extends Component {
     return (
       <div className="dashboard">
         <SubwayDashboard useLocalData={useLocalData} {...locationProps} />
-        <WeatherDashboard {...locationProps} />
+        <WeatherDashboard useLocalData={useLocalData} {...locationProps} />
       </div>
     );
   }

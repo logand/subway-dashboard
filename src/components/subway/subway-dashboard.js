@@ -33,25 +33,32 @@ export default class SubwayDashboard extends React.Component {
   }
 
   componentWillMount() {
-    if (this.props.isGeolocationEnabled) {
+    if (this.props.useLocalData) {
+      this.setState({
+        stations: subwayData.data,
+        lastUpdated: subwayData.updated
+      });
+    } else if (this.props.isGeolocationEnabled) {
       this.setState({ locationEnabled: true });
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const oldLatitude = this.props.latitude;
-    const oldLongitude = this.props.longitude;
-    const {
-      hasLocation,
-      locationEnabled,
-      location: { latitude, longitude }
-    } = nextProps;
-    if (
-      locationEnabled &&
-      hasLocation &&
-      (oldLatitude !== latitude || oldLongitude !== longitude)
-    ) {
-      this.updateStations(latitude, longitude);
+    if (!this.props.useLocalData) {
+      const oldLatitude = this.props.latitude;
+      const oldLongitude = this.props.longitude;
+      const {
+        hasLocation,
+        locationEnabled,
+        location: { latitude, longitude }
+      } = nextProps;
+      if (
+        locationEnabled &&
+        hasLocation &&
+        (oldLatitude !== latitude || oldLongitude !== longitude)
+      ) {
+        this.updateStations(latitude, longitude);
+      }
     }
   }
 
@@ -76,15 +83,6 @@ export default class SubwayDashboard extends React.Component {
       });
     return trains;
   };
-
-  componentDidMount() {
-    if (this.props.useLocalData) {
-      this.setState({
-        stations: subwayData.data,
-        lastUpdated: subwayData.updated
-      });
-    }
-  }
 
   toggleStyle = () => {
     this.setState({ darkStyle: !this.state.darkStyle });

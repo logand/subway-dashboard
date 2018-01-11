@@ -13,7 +13,7 @@ const App = props => (
 );
 
 const View = props => {
-  return <Dashboard {...props} />;
+  return <Dashboard {...props} useLocalData={true} />;
 };
 
 const Main = () => (
