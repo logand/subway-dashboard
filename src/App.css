@@ -1,3 +1,9 @@
+@import url(./css/toggle-switch.css);
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif; }
+
 .App {
   text-align: center; }
 
@@ -23,10 +29,6 @@
   to {
     transform: rotate(360deg); } }
 
-.routeList .card-body {
-  background-color: #222;
-  color: #ccc; }
-
 .stationRoutes {
   margin-left: 1em; }
   .stationRoutes :not(:first-child) {
@@ -42,17 +44,11 @@
     vertical-align: text-top;
     width: 50px;
     margin-left: 10px;
-    text-align: right;
+    text-align: left;
     white-space: nowrap;
     overflow: visible;
     font-size: 1.25em;
     font-weight: 600; }
-    .train .trainStatus .trainStatus-time {
-      color: #ffec00;
-      text-shadow: 0 0 2px #ffec00; }
-    .train .trainStatus .trainStatus-text {
-      color: #c0ff00;
-      text-shadow: 0 0 2px #c0ff00; }
 
 .mta-bullet {
   display: inline-block;
@@ -63,7 +59,6 @@
   text-align: center;
   font-weight: bold;
   color: #fff;
-  padding-top: 1px;
   -webkit-border-radius: 999px;
   -moz-border-radius: 999px;
   border-radius: 999px;
@@ -104,3 +99,64 @@
 
 .mta-bullet.line-S {
   background-color: #808183; }
+
+.subwayContainer .station > .card-header {
+  box-shadow: 0 5px 6px -3px #333; }
+
+.subwayContainer .routeList .card-header {
+  font-weight: bold; }
+
+.subwayContainer .train .mta-bullet {
+  font-size: 1.2 em; }
+
+.subwayContainer.subwayContainer--light .station > .card-header {
+  background: #ddd; }
+
+.subwayContainer.subwayContainer--light .routeList .card-body {
+  padding: 0; }
+
+.subwayContainer.subwayContainer--light .routeList .card-header {
+  color: white;
+  background: #555;
+  border-radius: 0; }
+
+.subwayContainer.subwayContainer--light .train {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #ccc; }
+  .subwayContainer.subwayContainer--light .train:nth-child(odd) {
+    background-color: #efefef; }
+
+.subwayContainer.subwayContainer--dark .station > .card-header {
+  background: #666;
+  color: white; }
+
+.subwayContainer.subwayContainer--dark .routeList .card-header {
+  background: #ddd;
+  border-radius: 0; }
+
+.subwayContainer.subwayContainer--dark .routeList .card-body {
+  background-color: #222;
+  color: #ccc; }
+
+.subwayContainer.subwayContainer--dark .routeList:first-child .card-header {
+  border-right: 1px solid #666; }
+
+.subwayContainer.subwayContainer--dark .trainStatus-time {
+  color: #ffec00;
+  text-shadow: 0 0 2px #ffec00; }
+
+.subwayContainer.subwayContainer--dark .trainStatus-text {
+  color: #c0ff00;
+  text-shadow: 0 0 2px #c0ff00; }
+
+/* Toggle Switch Styling */
+.toggleSwitchWithLabel .toggleSwitchWithLabel-prelabel {
+  margin-right: 0.5em; }
+
+/* Navbar Styling */
+.navbar .navbar-collapse > :nth-child(n) {
+  margin-right: 2em; }
+
+/* Icons */
+.hasLocationArrow {
+  fill: #2b80ff; }

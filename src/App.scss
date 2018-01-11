@@ -63,7 +63,7 @@ body {
     vertical-align: text-top;
     width: 50px;
     margin-left: 10px;
-    text-align: right;
+    text-align: left;
     white-space: nowrap;
     overflow: visible;
     font-size: 1.25em;
@@ -141,6 +141,12 @@ body {
     }
   }
 
+  .train {
+    .mta-bullet {
+      font-size: 1.2 em;
+    }
+  }
+
   &.subwayContainer--light {
     .station {
       > .card-header {
@@ -209,4 +215,18 @@ body {
   .toggleSwitchWithLabel-prelabel {
     margin-right: 0.5em;
   }
+}
+
+/* Navbar Styling */
+.navbar {
+  .navbar-collapse {
+    > :nth-child(n) {
+      margin-right: 2em;
+    }
+  }
+}
+
+/* Icons */
+.hasLocationArrow {
+  fill: #2b80ff;
 }
