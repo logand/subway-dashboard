@@ -214,6 +214,26 @@ body {
   }
 }
 
+.locationDisplay {
+  display: flex;
+  align-items: center;
+
+  &.locationDisplay--enabled {
+    .locationDisplay-text {
+      color: #2b80ff;
+    }
+  }
+
+  .locationDisplay-text {
+    margin: 0;
+    margin-left: 0.5em;
+  }
+}
+
+.icon {
+  display: flex;
+}
+
 /* Toggle Switch Styling */
 .toggleSwitchWithLabel {
   .toggleSwitchWithLabel-prelabel {

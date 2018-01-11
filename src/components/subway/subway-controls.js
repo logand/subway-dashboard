@@ -19,32 +19,37 @@ class SubwayControls extends React.Component {
       toggleStyle,
       activeStyle,
       hasLocation,
-      locationEnabled
+      locationEnabled,
+      location: { latitude, longitude }
     } = this.props;
-    let locationIcon = null;
-    let locationStatus = null;
+    let locationDisplay = null;
 
     if (!locationEnabled) {
-      locationStatus = (
-        <button className="btn btn-link my-2 my-sm-0" type="submit">
-          Location Services Unavailable
-        </button>
+      locationDisplay = (
+        <span className="locationDisplay">
+          <NoLocationIcon />
+          <p className="locationDisplay-text text-muted">
+            Location Services Unavailable
+          </p>
+        </span>
       );
-      locationIcon = <NoLocationIcon />;
     } else if (hasLocation) {
-      locationStatus = (
-        <button className="btn btn-link my-2 my-sm-0" type="submit">
-          Using Current Location
-        </button>
+      const location = ` (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`;
+      locationDisplay = (
+        <span className="locationDisplay locationDisplay--enabled">
+          <HasLocationIcon />
+          <p className="locationDisplay-text">
+            Using Current Location @ {location}
+          </p>
+        </span>
       );
-      locationIcon = <HasLocationIcon />;
     } else {
-      locationStatus = (
-        <button className="btn btn-link my-2 my-sm-0" type="submit">
-          Finding Current Location...
-        </button>
+      locationDisplay = (
+        <span className="locationDisplay">
+          <FindingLocationIcon />
+          <p className="locationDisplay-text">Finding Current Location...</p>
+        </span>
       );
-      locationIcon = <FindingLocationIcon />;
     }
     return (
       <nav className="navbar navbar-expand-sm">
@@ -71,10 +76,7 @@ class SubwayControls extends React.Component {
               postlabel="Dark"
             />
           </ul>
-          <ul className="navbar-nav">
-            {locationStatus}
-            {locationIcon}
-          </ul>
+          <ul className="navbar-nav">{locationDisplay}</ul>
         </div>
       </nav>
     );

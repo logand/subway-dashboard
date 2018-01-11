@@ -99,7 +99,13 @@ class SubwayDashboard extends React.Component {
   };
 
   render() {
-    const { stations, darkStyle, hasLocation, locationEnabled } = this.state;
+    const {
+      stations,
+      darkStyle,
+      hasLocation,
+      locationEnabled,
+      location
+    } = this.state;
     const styleClass = darkStyle
       ? "subwayContainer--light"
       : "subwayContainer--dark";
@@ -110,6 +116,7 @@ class SubwayDashboard extends React.Component {
           activeStyle={!this.state.darkStyle}
           hasLocation={hasLocation}
           locationEnabled={locationEnabled}
+          location={location}
         />
         <StationDisplay stations={stations} />
       </div>

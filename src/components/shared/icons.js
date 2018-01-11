@@ -6,7 +6,7 @@ const NoLocationIcon = ({ className, styles }) => {
       <svg
         className={`noLocationArrow ${className}`}
         style={styles}
-        fill="#000000"
+        fill="#868e96"
         height="24"
         viewBox="0 0 24 24"
         width="24"
