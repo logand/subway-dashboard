@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { getWindDirectionDisplay } from "../../utils.js";
 
 const CurrentWeather = ({ name, weather, main }) => {
   const todaysWeather = weather[0];
-  const dayTime = "night";
+  const now = new Date();
+  const hour = now.getHours();
+  const dayTime = hour > 4 && hour < 18 ? "day" : "night";
   return (
     <div className="currentWeather">
       <div className="card">
@@ -21,10 +24,30 @@ const CurrentWeather = ({ name, weather, main }) => {
   );
 };
 
-const ForecastedWeather = ({ list }) => {
-  if (typeof list === "undefined" || list.length < 1) return null;
-  const forecastItems = list.splice(0, 4);
-  const generateForecast = items => {
+class ForecastedWeather extends Component {
+  state = {
+    rain: {
+      willRain: false,
+      amount: 0
+    },
+    snow: {
+      willSnow: false,
+      amount: 0
+    },
+    wind: {
+      highWind: true,
+      speed: 0,
+      direction: null
+    },
+    minTemp: null,
+    maxTemp: null
+  };
+
+  componentWillReceiveProps(nextProps) {
+    this.processProps(nextProps.list);
+  }
+
+  processProps(list) {
     let forecastData = {
       rain: {
         willRain: false,
@@ -34,7 +57,6 @@ const ForecastedWeather = ({ list }) => {
         willSnow: false,
         amount: 0
       },
-      highWind: false,
       wind: {
         speed: 0,
         direction: 0
@@ -43,7 +65,9 @@ const ForecastedWeather = ({ list }) => {
       maxTemp: null
     };
 
-    items.forEach(forecastBlock => {
+    const forecastItems = list.splice(0, 4);
+
+    forecastItems.forEach(forecastBlock => {
       if (forecastBlock.hasOwnProperty("rain")) {
         forecastData.rain.willRain = true;
         forecastData.rain.amount += forecastBlock.rain["3h"];
@@ -54,10 +78,8 @@ const ForecastedWeather = ({ list }) => {
       }
       if (
         forecastBlock.hasOwnProperty("wind") &&
-        (forecastBlock.wind.speed > 16 &&
-          forecastBlock.wind.speed > forecastData.wind.speed)
+        forecastBlock.wind.speed > forecastData.wind.speed
       ) {
-        forecastData.highWind = true;
         forecastData.wind = {
           speed: forecastBlock.wind.speed,
           direction: forecastBlock.wind.deg
@@ -77,31 +99,39 @@ const ForecastedWeather = ({ list }) => {
       }
     });
 
-    return forecastData;
-  };
+    this.setState({
+      ...forecastData
+    });
+  }
 
-  const {
-    rain,
-    snow,
-    highWind,
-    wind: { speed, direction },
-    minTemp,
-    maxTemp
-  } = generateForecast(forecastItems);
-
-  return (
-    <div className="forecastedWeather">
-      <div className="card">
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">
-            <h3>Temperature</h3>
-            <TempDisplay temp={minTemp} label="Min" />
-            <TempDisplay temp={maxTemp} label="Max" />
-          </li>
-          <PrecipitationWarning rain={rain} snow={snow} />
-        </ul>
+  render() {
+    const { rain, snow, wind, minTemp, maxTemp } = this.state;
+    return minTemp === null ? null : (
+      <div className="forecastedWeather">
+        <div className="card">
+          <ul className="list-group list-group-flush">
+            <div className="card-header h3 text-center">
+              Forecast <small className="text-muted">- 12 Hours</small>
+            </div>
+            <MinMaxTempDisplay minTemp={minTemp} maxTemp={maxTemp} />
+            <PrecipitationWarning rain={rain} snow={snow} />
+            <WindWarning {...wind} />
+          </ul>
+        </div>
       </div>
-    </div>
+    );
+  }
+}
+
+const MinMaxTempDisplay = ({ minTemp, maxTemp }) => {
+  return (
+    <li className="list-group-item temperaturesDisplay">
+      <i className="wi wi-thermometer" />
+      <div className="temperaturesDisplay-temps">
+        <TempDisplay temp={minTemp} label="Min" />
+        <TempDisplay temp={maxTemp} label="Max" />
+      </div>
+    </li>
   );
 };
 
@@ -117,12 +147,41 @@ const PrecipitationWarning = ({
     const title = `Prepare for ${willRain ? "Rain" : ""}${willRain && willSnow
       ? " and "
       : ""}${willSnow ? "Snow" : ""}`;
+    const amount = ((rain.amount + snow.amount) * 0.0393701).toFixed(2);
     return (
-      <li className="list-group-item">
-        <div className="precipitationDisplay list-group-item d-flex align-items-center flex-column text-center">
+      <li className="precipitationDisplay list-group-item">
+        <div className="precipitationDisplay-container list-group-item">
           <h4>Prepare for Precipitation!</h4>
-          <i class="wi wi-umbrella" />
+          <i className="wi wi-umbrella" />
+          <h5>{amount} inches</h5>
         </div>
+      </li>
+    );
+  }
+};
+
+const WindWarning = ({ speed, direction }) => {
+  if (direction === null || speed < 6) {
+    return null;
+  } else {
+    const windDescription = speed > 16 ? "Howling Winds!" : "Light Winds Ahead";
+    const windDirection = Math.floor(direction);
+    const windDisplay = getWindDirectionDisplay(direction);
+    return (
+      <li className="windDisplay list-group-item">
+        <h4>{windDescription}</h4>
+        <span className="windDisplay-indicators">
+          <div className="windIndicator windIndicator-speed">
+            <i className="wi wi-strong-wind" />
+            <h5>{Math.round(speed)} mph</h5>
+          </div>
+          <div className="windIndicator windIndicator-direction">
+            <div className="windIndicator-spinner">
+              <i className={`wi wi-wind towards-${windDirection}-deg`} />
+            </div>
+            <p className="lead">{windDisplay}</p>
+          </div>
+        </span>
       </li>
     );
   }
@@ -135,9 +194,9 @@ const TempDisplay = ({ temp, isFahrenheit = true, label = "" }) => {
   return (
     <span className="temperatureDisplay">
       <h3 className="">
-        {displayLabel} {temp}
+        {displayLabel} {Math.round(temp)}
       </h3>
-      <i class={iconClass} />
+      <i className={iconClass} />
     </span>
   );
 };
@@ -146,9 +205,9 @@ const WeatherBox = ({ isDay, weatherId, temp, description }) => {
   const dayTime = isDay ? "day" : "night";
   return (
     <div className={`weatherIcon weatherIcon-${dayTime}`}>
-      <i class={`wi wi-owm-${dayTime}-${weatherId}`} />
+      <i className={`wi wi-owm-${dayTime}-${weatherId}`} />
       <div className="weatherInfo">
-        <h3 class="weatherTitle">{description}</h3>
+        <h3 className="weatherTitle">{description}</h3>
         <TempDisplay temp={temp} />
       </div>
     </div>

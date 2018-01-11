@@ -64,10 +64,9 @@ export default class WeatherDashboard extends Component {
   fetchLocalForecast = (latitude, longitude) => {
     const url =
       "http://api.openweathermap.org/data/2.5/forecast?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&units=imperial&";
-    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-    const byLocation = `lat=${latitude}&lon=-${longitude}`;
+    const byLocation = `lat=${latitude}&lon=${longitude}`;
 
-    const forecast = fetch(proxyUrl + url + byLocation)
+    const forecast = fetch(url + byLocation)
       .then(res => res.json())
       .then(json => {
         return json;
@@ -78,10 +77,9 @@ export default class WeatherDashboard extends Component {
   fetchLocalWeather = (latitude, longitude) => {
     const url =
       "http://api.openweathermap.org/data/2.5/weather?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&units=imperial&";
-    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-    const byLocation = `lat=${latitude}&lon=-${longitude}`;
+    const byLocation = `lat=${latitude}&lon=${longitude}`;
 
-    const weather = fetch(proxyUrl + url + byLocation)
+    const weather = fetch(url + byLocation)
       .then(res => res.json())
       .then(json => {
         return json;
