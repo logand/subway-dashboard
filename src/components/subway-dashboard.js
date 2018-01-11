@@ -15,8 +15,9 @@ class SubwayDashboard extends React.Component {
     stations: [],
     lastUpdated: null,
     isDark: false,
+    locationEnabled: false,
+    hasLocation: false,
     location: {
-      hasLocation: false,
       latitude: null,
       longitude: null
     }
@@ -32,10 +33,17 @@ class SubwayDashboard extends React.Component {
     };
   }
 
+  componentWillMount() {
+    if (this.props.isGeolocationEnabled) {
+      this.setState({ locationEnabled: true });
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (
-      this.state.location.hasLocation === false &&
-      nextProps.coords !== null
+      this.state.hasLocation === false &&
+      nextProps.coords !== null &&
+      this.props.isGeolocationEnabled
     ) {
       const { coords: { latitude, longitude } } = nextProps;
       this.updateLocation(true, latitude, longitude);
@@ -52,8 +60,9 @@ class SubwayDashboard extends React.Component {
     this.fetchLocalStations(latitude, longitude).then(stations => {
       this.setState({
         stations: stations.data,
+        lastUpdated: stations.updated,
+        hasLocation: true,
         location: {
-          hasLocation: true,
           latitude: latitude,
           longitude: longitude
         }
@@ -79,7 +88,7 @@ class SubwayDashboard extends React.Component {
   componentDidMount() {
     if (this.props.useLocalData) {
       this.setState({
-        trains: subwayData.data,
+        stations: subwayData.data,
         lastUpdated: subwayData.updated
       });
     }
@@ -90,7 +99,7 @@ class SubwayDashboard extends React.Component {
   };
 
   render() {
-    const { stations, darkStyle, location: { hasLocation } } = this.state;
+    const { stations, darkStyle, hasLocation, locationEnabled } = this.state;
     const styleClass = darkStyle
       ? "subwayContainer--light"
       : "subwayContainer--dark";
@@ -100,6 +109,7 @@ class SubwayDashboard extends React.Component {
           toggleStyle={this.toggleStyle}
           activeStyle={!this.state.darkStyle}
           hasLocation={hasLocation}
+          locationEnabled={locationEnabled}
         />
         <StationDisplay stations={stations} />
       </div>
