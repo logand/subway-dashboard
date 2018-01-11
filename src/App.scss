@@ -1,3 +1,11 @@
+@import "./css/toggle-switch.css";
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -32,10 +40,6 @@
 }
 
 .routeList {
-  .card-body {
-    background-color: #222;
-    color: #ccc;
-  }
 }
 
 .stationRoutes {
@@ -59,21 +63,11 @@
     vertical-align: text-top;
     width: 50px;
     margin-left: 10px;
-    text-align: right;
+    text-align: left;
     white-space: nowrap;
     overflow: visible;
     font-size: 1.25em;
     font-weight: 600;
-
-    .trainStatus-time {
-      color: #ffec00;
-      text-shadow: 0 0 2px #ffec00;
-    }
-
-    .trainStatus-text {
-      color: #c0ff00;
-      text-shadow: 0 0 2px #c0ff00;
-    }
   }
 }
 
@@ -133,4 +127,130 @@
 
 .mta-bullet.line-S {
   background-color: #808183;
+}
+
+.subwayContainer {
+  .station {
+    > .card-header {
+      box-shadow: 0 5px 6px -3px #333;
+    }
+  }
+
+  .routeList {
+    .card-header {
+      font-weight: bold;
+    }
+  }
+
+  .train {
+    .mta-bullet {
+      font-size: 1.2 em;
+    }
+  }
+
+  &.subwayContainer--light {
+    .station {
+      > .card-header {
+        background: #ddd;
+      }
+    }
+    .routeList {
+      .card-body {
+        padding: 0;
+      }
+
+      .card-header {
+        color: white;
+        background: #555;
+        border-radius: 0;
+      }
+    }
+
+    .train {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #ccc;
+
+      &:nth-child(odd) {
+        background-color: #efefef;
+      }
+    }
+  }
+  &.subwayContainer--dark {
+    .station {
+      > .card-header {
+        background: #666;
+        color: white;
+      }
+    }
+
+    .routeList {
+      .card-header {
+        background: #ddd;
+        border-radius: 0;
+      }
+      .card-body {
+        background-color: #222;
+        color: #ccc;
+      }
+
+      &:first-child {
+        .card-header {
+          border-right: 1px solid #666;
+        }
+      }
+    }
+    .train {
+      padding: 0.1em 0;
+    }
+    .trainStatus-time {
+      color: #ffec00;
+      text-shadow: 0 0 2px #ffec00;
+    }
+
+    .trainStatus-text {
+      color: #c0ff00;
+      text-shadow: 0 0 2px #c0ff00;
+    }
+  }
+}
+
+.locationDisplay {
+  display: flex;
+  align-items: center;
+
+  &.locationDisplay--enabled {
+    .locationDisplay-text {
+      color: #2b80ff;
+    }
+  }
+
+  .locationDisplay-text {
+    margin: 0;
+    margin-left: 0.5em;
+  }
+}
+
+.icon {
+  display: flex;
+}
+
+/* Toggle Switch Styling */
+.toggleSwitchWithLabel {
+  .toggleSwitchWithLabel-prelabel {
+    margin-right: 0.5em;
+  }
+}
+
+/* Navbar Styling */
+.navbar {
+  .navbar-collapse {
+    > :nth-child(n) {
+      margin-right: 2em;
+    }
+  }
+}
+
+/* Icons */
+.hasLocationArrow {
+  fill: #2b80ff;
 }

@@ -1,14 +1,26 @@
 import React from "react";
 import PropTypes from "prop-types";
+import SubwayControls from "./subway/subway-controls";
+import StationDisplay from "./subway/station-display";
+import subwayData from "../data/location-example.json";
+import { geolocated, geoPropTypes } from "react-geolocated";
 
-export default class SubwayDashboard extends React.Component {
+class SubwayDashboard extends React.Component {
   static propTypes = {
-    subwayData: PropTypes.shape({}).isRequired
+    useLocalData: PropTypes.bool,
+    ...geoPropTypes
   };
 
   state = {
-    stations: this.props.subwayData.data,
-    lastUpdated: this.props.subwayData.updated
+    stations: [],
+    lastUpdated: null,
+    isDark: false,
+    locationEnabled: false,
+    hasLocation: false,
+    location: {
+      latitude: null,
+      longitude: null
+    }
   };
 
   static childContextTypes = {
@@ -21,92 +33,95 @@ export default class SubwayDashboard extends React.Component {
     };
   }
 
-  render() {
-    const stationsDisplay = this.state.stations.map(station => {
-      return <Station stationData={station} key={station.id} />;
+  componentWillMount() {
+    if (this.props.isGeolocationEnabled) {
+      this.setState({ locationEnabled: true });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      this.state.hasLocation === false &&
+      nextProps.coords !== null &&
+      this.props.isGeolocationEnabled
+    ) {
+      const { coords: { latitude, longitude } } = nextProps;
+      this.updateLocation(true, latitude, longitude);
+    }
+  }
+
+  updateLocation(hasLocation, latitude, longitude) {
+    if (hasLocation) {
+      this.updateStations(latitude, longitude);
+    }
+  }
+
+  updateStations(latitude, longitude) {
+    this.fetchLocalStations(latitude, longitude).then(stations => {
+      this.setState({
+        stations: stations.data,
+        lastUpdated: stations.updated,
+        hasLocation: true,
+        location: {
+          latitude: latitude,
+          longitude: longitude
+        }
+      });
     });
-    return <div className="subway-container">{stationsDisplay}</div>;
+  }
+
+  fetchLocalStations = (latitude, longitude) => {
+    const url = "https://mighty-wildwood-28716.herokuapp.com/";
+    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    const byLocation = `by-location?lat=${latitude}&lon=${longitude}`;
+
+    const trains = fetch(proxyUrl + url + byLocation)
+      .then(res => res.json())
+      .then(json => {
+        return json;
+      });
+    return trains;
+  };
+
+  setCurrentLocation = (latitude, longitude) => {};
+
+  componentDidMount() {
+    if (this.props.useLocalData) {
+      this.setState({
+        stations: subwayData.data,
+        lastUpdated: subwayData.updated
+      });
+    }
+  }
+
+  toggleStyle = () => {
+    this.setState({ darkStyle: !this.state.darkStyle });
+  };
+
+  render() {
+    const {
+      stations,
+      darkStyle,
+      hasLocation,
+      locationEnabled,
+      location
+    } = this.state;
+    const styleClass = darkStyle
+      ? "subwayContainer--light"
+      : "subwayContainer--dark";
+    return (
+      <div className={`subwayContainer ${styleClass}`}>
+        <SubwayControls
+          toggleStyle={this.toggleStyle}
+          activeStyle={!this.state.darkStyle}
+          hasLocation={hasLocation}
+          locationEnabled={locationEnabled}
+          location={location}
+        />
+        <StationDisplay stations={stations} />
+      </div>
+    );
   }
 }
 
-const Station = ({ stationData }) => {
-  const { name, N, S, routes } = stationData;
-  const northBound = <RouteList name="Uptown" trains={N} />;
-  const southBound = <RouteList name="Downtown" trains={S} />;
-  const routesDisplay = (
-    <span className="stationRoutes">
-      {routes.map(route => <TrainSymbol route={route} key={route} />)}
-    </span>
-  );
-  return (
-    <div className="card">
-      <div className="card-header text-center">
-        {name} {routesDisplay}
-      </div>
-      <div className="card-body">
-        <div class="card-group">
-          {northBound}
-          {southBound}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const RouteList = ({ name, trains }) => {
-  const currentTime = Date.now();
-  const trainDisplay = trains.map(train => {
-    return <Train {...train} />;
-  });
-  return (
-    <div className="card routeList">
-      <div class="card-header bg-transparent">{name}</div>
-      <div className="card-body">
-        <h5 className="card-title" />
-        {trainDisplay}
-      </div>
-    </div>
-  );
-};
-
-const Train = ({ route, time }) => {
-  return (
-    <div className="train">
-      <TrainSymbol route={route} />
-      <TrainTime time={time} />
-    </div>
-  );
-};
-
-const TrainSymbol = ({ route }) => {
-  const classes = `mta-bullet line-${route}`;
-  return <span className={classes}>{route}</span>;
-};
-
-const TrainTime = ({ time }, context) => {
-  const { comparisonTime } = context;
-  const getTrainStatus = () => {
-    let text = "Now";
-    const trainTime = new Date(time);
-    const minutesDiff = Math.ceil(
-      (trainTime.getTime() - comparisonTime) / 60000
-    );
-    if (minutesDiff < 0) {
-      text = " Min Ago";
-    } else {
-      text = " Min";
-    }
-    return { displayTime: Math.abs(minutesDiff), text: text };
-  };
-  const { displayTime, text } = getTrainStatus();
-  return (
-    <span className="trainStatus">
-      <span className="trainStatus-time">{displayTime}</span>
-      <span className="trainStatus-text">{text}</span>
-    </span>
-  );
-};
-
-TrainTime.contextTypes = {
-  comparisonTime: PropTypes.number
-};
+export default geolocated()(SubwayDashboard);
