@@ -39,7 +39,29 @@ body {
   }
 }
 
-.routeList {
+.dashboard {
+  display: flex;
+
+  .subwayDashboard {
+    flex: 3;
+
+    @media (min-width: 768px) {
+      flex: 1;
+    }
+  }
+
+  .weatherDashboard {
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+      width: 250px;
+    }
+
+    @media (min-width: 992px) {
+      width: 300px;
+    }
+  }
 }
 
 .stationRoutes {
@@ -129,10 +151,16 @@ body {
   background-color: #808183;
 }
 
-.subwayContainer {
+.subwayDashboard {
   .station {
     > .card-header {
       box-shadow: 0 5px 6px -3px #333;
+    }
+
+    > .card-body {
+      @media (max-width: 768px) {
+        padding: 0.75rem 0.5rem 0.5rem;
+      }
     }
   }
 
@@ -148,7 +176,7 @@ body {
     }
   }
 
-  &.subwayContainer--light {
+  &.subwayDashboard--light {
     .station {
       > .card-header {
         background: #ddd;
@@ -175,7 +203,7 @@ body {
       }
     }
   }
-  &.subwayContainer--dark {
+  &.subwayDashboard--dark {
     .station {
       > .card-header {
         background: #666;

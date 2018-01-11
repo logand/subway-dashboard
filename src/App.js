@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
 import Header from "./components/header.js";
-import SubwayDashboard from "./components/subway-dashboard.js";
+import Dashboard from "./components/dashboard.js";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { withRouter } from "react-router";
 
@@ -12,14 +12,14 @@ const App = props => (
   </div>
 );
 
-const SubwayView = props => {
-  return <SubwayDashboard {...props} />;
+const View = props => {
+  return <Dashboard {...props} />;
 };
 
 const Main = () => (
   <main>
     <Switch>
-      <Route path="/" component={SubwayView} />
+      <Route path="/" component={View} />
     </Switch>
   </main>
 );
