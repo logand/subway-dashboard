@@ -3,17 +3,18 @@ import PropTypes from "prop-types";
 import SubwayControls from "./subway-controls";
 import StationDisplay from "./station-display";
 import subwayData from "../../data/location-example.json";
-import { geolocated, geoPropTypes } from "react-geolocated";
 
 export default class SubwayDashboard extends React.Component {
   static propTypes = {
     useLocalData: PropTypes.bool,
-    locationEnabled: PropTypes.bool,
-    hasLocation: PropTypes.bool,
+    locationEnabled: PropTypes.bool.isRequired,
+    hasLocation: PropTypes.bool.isRequired,
     location: PropTypes.shape({
       latitude: PropTypes.number,
       longitude: PropTypes.number
-    })
+    }),
+    toggleMetric: PropTypes.func.isRequired,
+    useMetic: PropTypes.bool.isRequired
   };
 
   state = {
@@ -32,33 +33,29 @@ export default class SubwayDashboard extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.useLocalData) {
       this.setState({
         stations: subwayData.data,
         lastUpdated: subwayData.updated
       });
-    } else if (this.props.isGeolocationEnabled) {
-      this.setState({ locationEnabled: true });
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.useLocalData) {
-      const oldLatitude = this.props.latitude;
-      const oldLongitude = this.props.longitude;
-      const {
-        hasLocation,
-        locationEnabled,
-        location: { latitude, longitude }
-      } = nextProps;
-      if (
-        locationEnabled &&
-        hasLocation &&
-        (oldLatitude !== latitude || oldLongitude !== longitude)
-      ) {
-        this.updateStations(latitude, longitude);
-      }
+    const oldLatitude = this.props.latitude;
+    const oldLongitude = this.props.longitude;
+    const {
+      hasLocation,
+      locationEnabled,
+      location: { latitude, longitude }
+    } = nextProps;
+    if (
+      locationEnabled &&
+      hasLocation &&
+      (oldLatitude !== latitude || oldLongitude !== longitude)
+    ) {
+      this.updateStations(latitude, longitude);
     }
   }
 
@@ -89,8 +86,14 @@ export default class SubwayDashboard extends React.Component {
   };
 
   render() {
-    const { hasLocation, locationEnabled, location } = this.props;
     const { stations, darkStyle } = this.state;
+    const {
+      locationEnabled,
+      hasLocation,
+      location,
+      useMetic,
+      toggleMetric
+    } = this.props;
     const styleClass = darkStyle
       ? "subwayDashboard--light"
       : "subwayDashboard--dark";
@@ -102,6 +105,8 @@ export default class SubwayDashboard extends React.Component {
           hasLocation={hasLocation}
           locationEnabled={locationEnabled}
           location={location}
+          useMetic={useMetic}
+          toggleMetric={toggleMetric}
         />
         <StationDisplay stations={stations} />
       </div>
