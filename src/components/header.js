@@ -13,7 +13,7 @@ const Header = ({ location }) => (
           className="d-inline-block align-top mr-2"
           alt=""
         />
-        Subway Dashboard
+        NYC Subway Dashboard
       </a>
       <button
         className="navbar-toggler"

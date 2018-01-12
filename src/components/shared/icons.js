@@ -55,4 +55,46 @@ const HasLocationIcon = ({ className, styles }) => {
   );
 };
 
-export { NoLocationIcon, HasLocationIcon, FindingLocationIcon };
+const IconDirectionArrow = ({ className, styles }) => {
+  return (
+    <i className="icon">
+      <svg
+        className={className}
+        style={styles}
+        fill="#ffffff"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+      >
+        <path d="M12 8V4l8 8-8 8v-4H4V8z" />
+        <path d="M0 0h24v24H0z" fill="none" />
+      </svg>
+    </i>
+  );
+};
+
+const IconPlayArrow = ({ className, styles }) => {
+  return (
+    <i className="icon">
+      <svg
+        className={`playArrowIcon ${className}`}
+        style={styles}
+        fill="#000000"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+      >
+        <path d="M8 5v14l11-7z" />
+        <path d="M0 0h24v24H0z" fill="none" />
+      </svg>
+    </i>
+  );
+};
+
+export {
+  NoLocationIcon,
+  HasLocationIcon,
+  FindingLocationIcon,
+  IconPlayArrow,
+  IconDirectionArrow
+};

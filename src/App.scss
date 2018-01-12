@@ -1,4 +1,7 @@
-@import "./css/toggle-switch.css";
+@import "./css/toggle-switch";
+@import "./css/weather-icons-wind.css";
+@import "./css/weather-icons.css";
+@import "./css/slider-switch.css";
 
 body {
   margin: 0;
@@ -39,7 +42,29 @@ body {
   }
 }
 
-.routeList {
+.dashboard {
+  display: flex;
+
+  .subwayDashboard {
+    flex: 3;
+
+    @media (min-width: 768px) {
+      flex: 1;
+    }
+  }
+
+  .weatherDashboard {
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+      width: 250px;
+    }
+
+    @media (min-width: 992px) {
+      width: 300px;
+    }
+  }
 }
 
 .stationRoutes {
@@ -89,9 +114,15 @@ body {
 }
 .mta-bullet.line-4,
 .mta-bullet.line-5,
+.mta-bullet.line-5X,
 .mta-bullet.line-6,
 .mta-bullet.line-6X {
   background-color: #00933c;
+}
+
+.mta-bullet.line-5X,
+.mta-bullet.line-6X {
+  text-transform: lowercase;
 }
 
 .mta-bullet.line-L {
@@ -129,26 +160,37 @@ body {
   background-color: #808183;
 }
 
-.subwayContainer {
+.subwayDashboard {
   .station {
+    border-radius: 0;
+
     > .card-header {
       box-shadow: 0 5px 6px -3px #333;
+      border-radius: 0;
+    }
+
+    > .card-body {
+      @media (max-width: 768px) {
+        padding: 0.75rem 0.5rem 0.5rem;
+      }
     }
   }
 
   .routeList {
-    .card-header {
+    > .card-header {
       font-weight: bold;
+      display: inline-flex;
+      align-items: center;
     }
   }
 
   .train {
     .mta-bullet {
-      font-size: 1.2 em;
+      font-size: 1.3em;
     }
   }
 
-  &.subwayContainer--light {
+  &.subwayDashboard--light {
     .station {
       > .card-header {
         background: #ddd;
@@ -161,7 +203,7 @@ body {
 
       .card-header {
         color: white;
-        background: #555;
+        background: #666;
         border-radius: 0;
       }
     }
@@ -175,7 +217,7 @@ body {
       }
     }
   }
-  &.subwayContainer--dark {
+  &.subwayDashboard--dark {
     .station {
       > .card-header {
         background: #666;
@@ -191,6 +233,10 @@ body {
       .card-body {
         background-color: #222;
         color: #ccc;
+      }
+
+      .playArrowIcon {
+        fill: #aaa;
       }
 
       &:first-child {
@@ -253,4 +299,171 @@ body {
 /* Icons */
 .hasLocationArrow {
   fill: #2b80ff;
+}
+
+.playArrowIcon {
+  &.north {
+    transform: rotate(-90deg);
+  }
+
+  &.south {
+    transform: rotate(90deg);
+  }
+}
+
+.weatherIcon {
+  font-size: 6em;
+  text-align: center;
+  padding: 0.1em;
+
+  .weatherInfo {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &.weatherIcon-day {
+    background: lightblue;
+    color: yellow;
+
+    .weatherInfo {
+      color: #044398;
+    }
+  }
+
+  &.weatherIcon-night {
+    background: #13045a;
+    color: white;
+
+    .weatherInfo {
+      color: lightblue;
+    }
+  }
+}
+
+.temperaturesDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  .wi {
+    font-size: 3em;
+  }
+
+  .temperatureDisplay {
+    .wi {
+    }
+  }
+}
+
+.temperatureDisplay {
+  display: flex;
+
+  .wi {
+    font-size: 29px;
+  }
+}
+
+.precipitationDisplay {
+  padding: 0;
+}
+
+.precipitationDisplay-container {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  background-color: #d8363d;
+  color: white;
+  animation: breathing 5s ease-out infinite normal;
+
+  .wi {
+    font-size: 5em;
+    margin-bottom: 0.2em;
+  }
+}
+
+.windDisplay {
+  background-color: #eee;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .wi {
+    font-size: 5em;
+  }
+
+  .windDisplay-indicators {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  .windIndicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .wi-strong-wind {
+      animation: windStretch 4s ease-out infinite normal;
+    }
+  }
+
+  .windIndicator-direction {
+    margin-left: 1em;
+
+    .windIndicator-spinner {
+      animation: windy 4s ease-out infinite normal;
+    }
+  }
+}
+
+@keyframes breathing {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes windStretch {
+  0% {
+    transform: scaleX(0.9);
+  }
+
+  25% {
+    transform: scaleX(1);
+  }
+
+  50% {
+    transform: scaleX(1.1);
+  }
+
+  100% {
+    transform: scaleX(0.9);
+  }
+}
+
+@keyframes windy {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-10deg);
+  }
+
+  60% {
+    transform: rotate(15deg);
+  }
+
+  100% {
+    transform: rotate(1deg);
+  }
 }
