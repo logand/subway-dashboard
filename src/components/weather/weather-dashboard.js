@@ -63,7 +63,7 @@ export default class WeatherDashboard extends Component {
 
   fetchLocalForecast = (latitude, longitude) => {
     const url =
-      "http://api.openweathermap.org/data/2.5/forecast?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&units=imperial&";
+      "http://api.openweathermap.org/data/2.5/forecast?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&";
     const byLocation = `lat=${latitude}&lon=${longitude}`;
 
     const forecast = fetch(url + byLocation)
@@ -76,7 +76,7 @@ export default class WeatherDashboard extends Component {
 
   fetchLocalWeather = (latitude, longitude) => {
     const url =
-      "http://api.openweathermap.org/data/2.5/weather?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&units=imperial&";
+      "http://api.openweathermap.org/data/2.5/weather?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&";
     const byLocation = `lat=${latitude}&lon=${longitude}`;
 
     const weather = fetch(url + byLocation)
@@ -93,8 +93,6 @@ export default class WeatherDashboard extends Component {
     if ((!this.props.useLocalData && !hasLocation) || weatherData === null) {
       return null;
     }
-    const umbrella = null;
-    // const umbrella = this.willNeedUmbrella();
     return (
       <div className="weatherDashboard">
         <CurrentWeather {...weatherData} />

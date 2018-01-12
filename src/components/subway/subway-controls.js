@@ -11,7 +11,14 @@ class SubwayControls extends React.Component {
   static propTypes = {
     toggleStyle: PropTypes.func.isRequired,
     activeStyle: PropTypes.bool.isRequired,
-    hasLocation: PropTypes.bool
+    hasLocation: PropTypes.bool,
+    toggleMetric: PropTypes.func.isRequired,
+    useMetic: PropTypes.bool.isRequired
+  };
+
+  static contextTypes = {
+    toggleMetric: PropTypes.func,
+    useMetic: PropTypes.bool
   };
 
   render() {
@@ -22,6 +29,7 @@ class SubwayControls extends React.Component {
       locationEnabled,
       location: { latitude, longitude }
     } = this.props;
+    const { useMetic, toggleMetric } = this.context;
     let locationDisplay = null;
 
     if (!locationEnabled) {
@@ -74,6 +82,16 @@ class SubwayControls extends React.Component {
               }}
               prelabel="Light"
               postlabel="Dark"
+            />
+          </ul>
+          <ul className="navbar-nav">
+            <ToggleSwitchWithLabel
+              checked={useMetic}
+              onChange={event => {
+                toggleMetric();
+              }}
+              prelabel="°F"
+              postlabel="°C"
             />
           </ul>
           <ul className="navbar-nav">{locationDisplay}</ul>

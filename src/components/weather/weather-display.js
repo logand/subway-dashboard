@@ -135,45 +135,62 @@ const MinMaxTempDisplay = ({ minTemp, maxTemp }) => {
   );
 };
 
-const PrecipitationWarning = ({
-  rain,
-  snow,
-  rain: { willRain },
-  snow: { willSnow }
-}) => {
+const PrecipitationWarning = (
+  { rain, snow, rain: { willRain }, snow: { willSnow } },
+  context
+) => {
   if (!willRain && !willSnow) {
     return null;
   } else {
     const title = `Prepare for ${willRain ? "Rain" : ""}${willRain && willSnow
       ? " and "
       : ""}${willSnow ? "Snow" : ""}`;
-    const amount = ((rain.amount + snow.amount) * 0.0393701).toFixed(2);
+    const getAccumulationAmount = useMetic => {
+      const amount = rain.amount + snow.amount;
+      if (useMetic) {
+        return `${amount.toFixed(2)} mm`;
+      } else {
+        return `${(amount * 0.0393701).toFixed(2)} inches`;
+      }
+    };
+    const displayAmount = getAccumulationAmount(context.useMetic);
     return (
       <li className="precipitationDisplay list-group-item">
         <div className="precipitationDisplay-container list-group-item">
           <h4>Prepare for Precipitation!</h4>
           <i className="wi wi-umbrella" />
-          <h5>{amount} inches</h5>
+          <h5>{displayAmount}</h5>
         </div>
       </li>
     );
   }
 };
 
-const WindWarning = ({ speed, direction }) => {
+PrecipitationWarning.contextTypes = {
+  useMetic: PropTypes.bool
+};
+
+const WindWarning = ({ speed, direction }, context) => {
   if (direction === null || speed < 6) {
     return null;
   } else {
-    const windDescription = speed > 16 ? "Howling Winds!" : "Light Winds Ahead";
+    const windDescription = speed > 8 ? "Howling Winds!" : "Light Winds Ahead";
     const windDirection = Math.floor(direction);
     const windDisplay = getWindDirectionDisplay(direction);
+    const getWindSpeed = useMetic => {
+      if (useMetic) {
+        return `${speed.toFixed(1)} m/s`;
+      } else {
+        return `${(speed * 2.23694).toFixed(1)} mph`;
+      }
+    };
     return (
       <li className="windDisplay list-group-item">
         <h4>{windDescription}</h4>
         <span className="windDisplay-indicators">
           <div className="windIndicator windIndicator-speed">
             <i className="wi wi-strong-wind" />
-            <h5>{Math.round(speed)} mph</h5>
+            <h5>{getWindSpeed(context.useMetic)}</h5>
           </div>
           <div className="windIndicator windIndicator-direction">
             <div className="windIndicator-spinner">
@@ -187,18 +204,34 @@ const WindWarning = ({ speed, direction }) => {
   }
 };
 
-const TempDisplay = ({ temp, isFahrenheit = true, label = "" }) => {
-  const iconClass = `wi wi-${isFahrenheit ? "fahrenheit" : "celsius"}`;
+WindWarning.contextTypes = {
+  useMetic: PropTypes.bool
+};
+
+const TempDisplay = ({ temp, label = "" }, context) => {
+  const iconClass = `wi wi-${context.useMetic ? "celsius" : "fahrenheit"}`;
   const displayLabel =
     label !== "" ? <small className="text-muted">{label}</small> : null;
+  const getTemp = (temp, useMetic) => {
+    if (useMetic) {
+      return temp - 273;
+    } else {
+      return 1.8 * (temp - 273) + 32;
+    }
+  };
+  const displayTemp = getTemp(temp, context.useMetic);
   return (
     <span className="temperatureDisplay">
       <h3 className="">
-        {displayLabel} {Math.round(temp)}
+        {displayLabel} {Math.round(displayTemp)}
       </h3>
       <i className={iconClass} />
     </span>
   );
+};
+
+TempDisplay.contextTypes = {
+  useMetic: PropTypes.bool
 };
 
 const WeatherBox = ({ isDay, weatherId, temp, description }) => {

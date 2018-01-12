@@ -11,6 +11,7 @@ class Dashboard extends Component {
   };
 
   state = {
+    useMetic: false,
     locationEnabled: false,
     hasLocation: false,
     location: {
@@ -23,11 +24,27 @@ class Dashboard extends Component {
     useLocalData: false
   };
 
+  static childContextTypes = {
+    useMetic: PropTypes.bool,
+    toggleMetric: PropTypes.func
+  };
+
+  getChildContext() {
+    return {
+      toggleMetric: this.toggleMetric,
+      useMetic: this.state.useMetic
+    };
+  }
+
   componentWillMount() {
     if (!this.props.useLocalData && this.props.isGeolocationEnabled) {
       this.setState({ locationEnabled: true });
     }
   }
+
+  toggleMetric = () => {
+    this.setState({ useMetic: !this.state.useMetic });
+  };
 
   componentWillReceiveProps(nextProps) {
     if (
@@ -48,7 +65,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { location, hasLocation, locationEnabled } = this.state;
+    const { location, hasLocation, locationEnabled, useMetic } = this.state;
     const { useLocalData } = this.props;
     const locationProps = {
       location: location,
@@ -57,8 +74,17 @@ class Dashboard extends Component {
     };
     return (
       <div className="dashboard">
-        <SubwayDashboard useLocalData={useLocalData} {...locationProps} />
-        <WeatherDashboard useLocalData={useLocalData} {...locationProps} />
+        <SubwayDashboard
+          useLocalData={useLocalData}
+          {...locationProps}
+          toggleMetric={this.toggleMetric}
+          useMetic={useMetic}
+        />
+        <WeatherDashboard
+          useLocalData={useLocalData}
+          {...locationProps}
+          useMetic={useMetic}
+        />
       </div>
     );
   }

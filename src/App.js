@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import logo from "./logo.svg";
+import React from "react";
 import Header from "./components/header.js";
 import Dashboard from "./components/dashboard.js";
 import { Switch, Route, Redirect } from "react-router-dom";
@@ -13,7 +12,7 @@ const App = props => (
 );
 
 const View = props => {
-  return <Dashboard {...props} useLocalData={true} />;
+  return <Dashboard {...props} useLocalData={false} />;
 };
 
 const Main = () => (

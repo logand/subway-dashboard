@@ -44,7 +44,6 @@ const ValidStation = ({ stationData }) => {
 };
 
 const RouteList = ({ name, trains, uptown }) => {
-  const currentTime = Date.now();
   const trainDisplay = trains.map(train => {
     return <Train {...train} key={`${train.route}${train.time}`} />;
   });
