@@ -1,4 +1,105 @@
-@import url(./css/toggle-switch.css);
+/*! react-toggle-switch v0.5.7 | (c) 2017 Trend Micro Inc. | MIT | https://github.com/trendmicro-frontend/react-toggle-switch */
+@import url(./css/weather-icons-wind.css);
+@import url(./css/weather-icons.css);
+.toggle-switch---switch---3EchW {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  line-height: 20px;
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  margin: 0 8px 0 0;
+  vertical-align: middle; }
+
+.toggle-switch---switch---3EchW *,
+.toggle-switch---switch---3EchW *:before,
+.toggle-switch---switch---3EchW *:after {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit; }
+
+.toggle-switch---switch-sm---31JjY {
+  width: 32px;
+  height: 16px; }
+
+.toggle-switch---switch---3EchW input {
+  display: none; }
+
+.toggle-switch---toggle---mncCu.toggle-switch---disabled---eCY9b {
+  opacity: 0.4;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+  filter: alpha(opacity=40);
+  cursor: not-allowed; }
+
+.toggle-switch---switch---3EchW.toggle-switch---checked---3aC9B
+.toggle-switch---toggle---mncCu {
+  border-color: #0096cc;
+  background-color: #0096cc; }
+
+.toggle-switch---switch---3EchW.toggle-switch---checked---3aC9B
+.toggle-switch---toggle---mncCu:before {
+  -webkit-transform: translateX(24px);
+  -moz-transform: translateX(24px);
+  -o-transform: translateX(24px);
+  -ms-transform: translateX(24px);
+  transform: translateX(24px); }
+
+.toggle-switch---switch---3EchW.toggle-switch---checked---3aC9B
+.toggle-switch---toggle-sm---20q-N:before {
+  -webkit-transform: translateX(16px);
+  -moz-transform: translateX(16px);
+  -o-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px); }
+
+.toggle-switch---toggle---mncCu {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-color: #bbb;
+  background-color: #bbb;
+  -webkit-transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  -ms-transition: all 0.4s ease;
+  transition: all 0.4s ease; }
+
+.toggle-switch---toggle---mncCu:hover {
+  background-color: #ccc; }
+
+.toggle-switch---toggle---mncCu:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 1px;
+  bottom: 1px;
+  background-color: #fff;
+  -webkit-transition: all 0.24s ease;
+  -moz-transition: all 0.24s ease;
+  -o-transition: all 0.24s ease;
+  -ms-transition: all 0.24s ease;
+  transition: all 0.24s ease;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 50%; }
+
+.toggle-switch---toggle-sm---20q-N:before {
+  height: 14px;
+  width: 14px; }
+
+.toggle-switch---toggle---mncCu.toggle-switch---round---1fvZN {
+  border-radius: 24px; }
+
+.toggle-switch---toggle-sm---20q-N.toggle-switch---round---1fvZN {
+  border-radius: 16px; }
+
+/*# sourceMappingURL=react-toggle-switch.css.map*/
 body {
   margin: 0;
   padding: 0;
@@ -28,6 +129,23 @@ body {
     transform: rotate(0deg); }
   to {
     transform: rotate(360deg); } }
+
+.dashboard {
+  display: flex; }
+  .dashboard .subwayDashboard {
+    flex: 3; }
+    @media (min-width: 768px) {
+      .dashboard .subwayDashboard {
+        flex: 1; } }
+  .dashboard .weatherDashboard {
+    display: none; }
+    @media (min-width: 768px) {
+      .dashboard .weatherDashboard {
+        display: block;
+        width: 250px; } }
+    @media (min-width: 992px) {
+      .dashboard .weatherDashboard {
+        width: 300px; } }
 
 .stationRoutes {
   margin-left: 1em; }
@@ -59,6 +177,7 @@ body {
   text-align: center;
   font-weight: bold;
   color: #fff;
+  padding-top: 1px;
   -webkit-border-radius: 999px;
   -moz-border-radius: 999px;
   border-radius: 999px;
@@ -67,9 +186,14 @@ body {
 
 .mta-bullet.line-4,
 .mta-bullet.line-5,
+.mta-bullet.line-5X,
 .mta-bullet.line-6,
 .mta-bullet.line-6X {
   background-color: #00933c; }
+
+.mta-bullet.line-5X,
+.mta-bullet.line-6X {
+  text-transform: lowercase; }
 
 .mta-bullet.line-L {
   background-color: #a7a9ac; }
@@ -100,54 +224,80 @@ body {
 .mta-bullet.line-S {
   background-color: #808183; }
 
-.subwayContainer .station > .card-header {
-  box-shadow: 0 5px 6px -3px #333; }
+.subwayDashboard .station {
+  border-radius: 0; }
+  .subwayDashboard .station > .card-header {
+    box-shadow: 0 5px 6px -3px #333;
+    border-radius: 0; }
+  @media (max-width: 768px) {
+    .subwayDashboard .station > .card-body {
+      padding: 0.75rem 0.5rem 0.5rem; } }
 
-.subwayContainer .routeList .card-header {
-  font-weight: bold; }
+.subwayDashboard .routeList > .card-header {
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center; }
 
-.subwayContainer .train .mta-bullet {
-  font-size: 1.2 em; }
+.subwayDashboard .train .mta-bullet {
+  font-size: 1.3em; }
 
-.subwayContainer.subwayContainer--light .station > .card-header {
+.subwayDashboard.subwayDashboard--light .station > .card-header {
   background: #ddd; }
 
-.subwayContainer.subwayContainer--light .routeList .card-body {
+.subwayDashboard.subwayDashboard--light .routeList .card-body {
   padding: 0; }
 
-.subwayContainer.subwayContainer--light .routeList .card-header {
+.subwayDashboard.subwayDashboard--light .routeList .card-header {
   color: white;
-  background: #555;
+  background: #666;
   border-radius: 0; }
 
-.subwayContainer.subwayContainer--light .train {
+.subwayDashboard.subwayDashboard--light .train {
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid #ccc; }
-  .subwayContainer.subwayContainer--light .train:nth-child(odd) {
+  .subwayDashboard.subwayDashboard--light .train:nth-child(odd) {
     background-color: #efefef; }
 
-.subwayContainer.subwayContainer--dark .station > .card-header {
+.subwayDashboard.subwayDashboard--dark .station > .card-header {
   background: #666;
   color: white; }
 
-.subwayContainer.subwayContainer--dark .routeList .card-header {
+.subwayDashboard.subwayDashboard--dark .routeList .card-header {
   background: #ddd;
   border-radius: 0; }
 
-.subwayContainer.subwayContainer--dark .routeList .card-body {
+.subwayDashboard.subwayDashboard--dark .routeList .card-body {
   background-color: #222;
   color: #ccc; }
 
-.subwayContainer.subwayContainer--dark .routeList:first-child .card-header {
+.subwayDashboard.subwayDashboard--dark .routeList .playArrowIcon {
+  fill: #aaa; }
+
+.subwayDashboard.subwayDashboard--dark .routeList:first-child .card-header {
   border-right: 1px solid #666; }
 
-.subwayContainer.subwayContainer--dark .trainStatus-time {
+.subwayDashboard.subwayDashboard--dark .train {
+  padding: 0.1em 0; }
+
+.subwayDashboard.subwayDashboard--dark .trainStatus-time {
   color: #ffec00;
   text-shadow: 0 0 2px #ffec00; }
 
-.subwayContainer.subwayContainer--dark .trainStatus-text {
+.subwayDashboard.subwayDashboard--dark .trainStatus-text {
   color: #c0ff00;
   text-shadow: 0 0 2px #c0ff00; }
+
+.locationDisplay {
+  display: flex;
+  align-items: center; }
+  .locationDisplay.locationDisplay--enabled .locationDisplay-text {
+    color: #2b80ff; }
+  .locationDisplay .locationDisplay-text {
+    margin: 0;
+    margin-left: 0.5em; }
+
+.icon {
+  display: flex; }
 
 /* Toggle Switch Styling */
 .toggleSwitchWithLabel .toggleSwitchWithLabel-prelabel {
@@ -160,3 +310,105 @@ body {
 /* Icons */
 .hasLocationArrow {
   fill: #2b80ff; }
+
+.playArrowIcon.north {
+  transform: rotate(-90deg); }
+
+.playArrowIcon.south {
+  transform: rotate(90deg); }
+
+.weatherIcon {
+  font-size: 6em;
+  text-align: center;
+  padding: 0.1em; }
+  .weatherIcon .weatherInfo {
+    display: flex;
+    justify-content: space-around; }
+  .weatherIcon.weatherIcon-day {
+    background: lightblue;
+    color: yellow; }
+    .weatherIcon.weatherIcon-day .weatherInfo {
+      color: #044398; }
+  .weatherIcon.weatherIcon-night {
+    background: #13045a;
+    color: white; }
+    .weatherIcon.weatherIcon-night .weatherInfo {
+      color: lightblue; }
+
+.temperaturesDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-around; }
+  .temperaturesDisplay .wi {
+    font-size: 3em; }
+
+.temperatureDisplay {
+  display: flex; }
+  .temperatureDisplay .wi {
+    font-size: 29px; }
+
+.precipitationDisplay {
+  padding: 0; }
+
+.precipitationDisplay-container {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  background-color: #d8363d;
+  color: white;
+  animation: breathing 5s ease-out infinite normal; }
+  .precipitationDisplay-container .wi {
+    font-size: 5em;
+    margin-bottom: 0.2em; }
+
+.windDisplay {
+  background-color: #eee;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+  .windDisplay .wi {
+    font-size: 5em; }
+  .windDisplay .windDisplay-indicators {
+    display: flex;
+    justify-content: space-around;
+    width: 100%; }
+  .windDisplay .windIndicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center; }
+    .windDisplay .windIndicator .wi-strong-wind {
+      animation: windStretch 4s ease-out infinite normal; }
+  .windDisplay .windIndicator-direction {
+    margin-left: 1em; }
+    .windDisplay .windIndicator-direction .windIndicator-spinner {
+      animation: windy 4s ease-out infinite normal; }
+
+@keyframes breathing {
+  0% {
+    transform: scale(1); }
+  50% {
+    transform: scale(0.9); }
+  100% {
+    transform: scale(1); } }
+
+@keyframes windStretch {
+  0% {
+    transform: scaleX(0.9); }
+  25% {
+    transform: scaleX(1); }
+  50% {
+    transform: scaleX(1.1); }
+  100% {
+    transform: scaleX(0.9); } }
+
+@keyframes windy {
+  0% {
+    transform: rotate(0deg); }
+  25% {
+    transform: rotate(-10deg); }
+  60% {
+    transform: rotate(15deg); }
+  100% {
+    transform: rotate(1deg); } }
