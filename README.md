@@ -13,3 +13,5 @@ In order to get started clone the repo and then run:
 npm install
 npm start
 ```
+Screenshot
+![App Screenshot](https://i.imgur.com/3Yy4ohF.png)
