@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import SubwayControls from "./subway-controls";
 import StationDisplay from "./station-display";
 import subwayData from "../../data/location-example.json";
+import ReactInterval from "react-interval";
 
 export default class SubwayDashboard extends React.Component {
   static propTypes = {
@@ -20,7 +21,10 @@ export default class SubwayDashboard extends React.Component {
   state = {
     stations: [],
     lastUpdated: null,
-    isDark: false
+    isDark: false,
+    timeout: 30000,
+    enabled: true,
+    comparisonTime: Date.now()
   };
 
   static childContextTypes = {
@@ -29,7 +33,7 @@ export default class SubwayDashboard extends React.Component {
 
   getChildContext() {
     return {
-      comparisonTime: Date.now()
+      comparisonTime: this.state.comparisonTime
     };
   }
 
@@ -86,7 +90,7 @@ export default class SubwayDashboard extends React.Component {
   };
 
   render() {
-    const { stations, darkStyle } = this.state;
+    const { stations, darkStyle, timeout, enabled } = this.state;
     const {
       locationEnabled,
       hasLocation,
@@ -109,6 +113,10 @@ export default class SubwayDashboard extends React.Component {
           toggleMetric={toggleMetric}
         />
         <StationDisplay stations={stations} />
+        <ReactInterval
+          {...{ timeout, enabled }}
+          callback={() => this.setState({ comparisonTime: Date.now() })}
+        />;
       </div>
     );
   }

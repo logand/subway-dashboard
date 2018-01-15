@@ -213,10 +213,11 @@ const TempDisplay = ({ temp, label = "" }, context) => {
   const displayLabel =
     label !== "" ? <small className="text-muted">{label}</small> : null;
   const getTemp = (temp, useMetic) => {
+    temp = temp - 273;
     if (useMetic) {
-      return temp - 273;
+      return temp;
     } else {
-      return 1.8 * (temp - 273) + 32;
+      return 1.8 * temp + 32;
     }
   };
   const displayTemp = getTemp(temp, context.useMetic);
