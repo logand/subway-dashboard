@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "./components/header.js";
 import Dashboard from "./components/dashboard.js";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import { withRouter } from "react-router";
 
 const App = props => (

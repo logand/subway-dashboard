@@ -321,9 +321,16 @@ body {
   font-size: 6em;
   text-align: center;
   padding: 0.1em; }
+  .weatherIcon.weatherIcon-future .wi-thermometer {
+    font-size: 0.6em; }
+  .weatherIcon.weatherIcon-future .weatherTitle {
+    margin-bottom: 0.4em; }
+  .weatherIcon .weatherTitle {
+    margin: 0; }
   .weatherIcon .weatherInfo {
     display: flex;
-    justify-content: space-around; }
+    justify-content: space-around;
+    align-items: center; }
   .weatherIcon.weatherIcon-day {
     background: lightblue;
     color: yellow; }
@@ -334,6 +341,14 @@ body {
     color: white; }
     .weatherIcon.weatherIcon-night .weatherInfo {
       color: lightblue; }
+
+.weatherAlert {
+  color: black; }
+  .weatherAlert .card-header {
+    background: yellow;
+    text-transform: capitalize; }
+  .weatherAlert .list-group-item:nth-child(even) {
+    background-color: #efefef; }
 
 .temperaturesDisplay {
   display: flex;
@@ -346,6 +361,12 @@ body {
   display: flex; }
   .temperatureDisplay .wi {
     font-size: 29px; }
+  .temperatureDisplay .temperatureDisplay-temp {
+    margin: 0; }
+  .temperatureDisplay .temperatureDisplay-apparentTemp {
+    font-size: 0.2em; }
+    .temperatureDisplay .temperatureDisplay-apparentTemp .wi {
+      font-size: 1em; }
 
 .precipitationDisplay {
   padding: 0; }
@@ -361,6 +382,8 @@ body {
   .precipitationDisplay-container .wi {
     font-size: 5em;
     margin-bottom: 0.2em; }
+  .precipitationDisplay-container .precipitationDisplay-title {
+    text-transform: capitalize; }
 
 .windDisplay {
   background-color: #eee;

@@ -315,9 +315,24 @@ body {
   text-align: center;
   padding: 0.1em;
 
+  &.weatherIcon-future {
+    .wi-thermometer {
+      font-size: 0.6em;
+    }
+
+    .weatherTitle {
+      margin-bottom: 0.4em;
+    }
+  }
+
+  .weatherTitle {
+    margin: 0;
+  }
+
   .weatherInfo {
     display: flex;
     justify-content: space-around;
+    align-items: center;
   }
 
   &.weatherIcon-day {
@@ -339,6 +354,20 @@ body {
   }
 }
 
+.weatherAlert {
+  color: black;
+
+  .card-header {
+    background: yellow;
+    text-transform: capitalize;
+  }
+
+  .list-group-item {
+    &:nth-child(even) {
+      background-color: #efefef;
+    }
+  }
+}
 .temperaturesDisplay {
   display: flex;
   align-items: center;
@@ -347,11 +376,6 @@ body {
   .wi {
     font-size: 3em;
   }
-
-  .temperatureDisplay {
-    .wi {
-    }
-  }
 }
 
 .temperatureDisplay {
@@ -359,6 +383,18 @@ body {
 
   .wi {
     font-size: 29px;
+  }
+
+  .temperatureDisplay-temp {
+    margin: 0;
+  }
+
+  .temperatureDisplay-apparentTemp {
+    font-size: 0.2em;
+
+    .wi {
+      font-size: 1em;
+    }
   }
 }
 
@@ -378,6 +414,10 @@ body {
   .wi {
     font-size: 5em;
     margin-bottom: 0.2em;
+  }
+
+  .precipitationDisplay-title {
+    text-transform: capitalize;
   }
 }
 

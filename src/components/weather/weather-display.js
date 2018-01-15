@@ -1,23 +1,34 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { getWindDirectionDisplay } from "../../utils.js";
+import {
+  getWindDirectionDisplay,
+  isDayCurrentlyTime,
+  getTemperatureScaleStyle,
+  getHoursForForecast,
+  getDateTime,
+  tempForDisplay
+} from "../../utils.js";
 
-const CurrentWeather = ({ name, weather, main }) => {
-  const todaysWeather = weather[0];
-  const now = new Date();
-  const hour = now.getHours();
-  const dayTime = hour > 4 && hour < 18 ? "day" : "night";
+const CurrentWeather = ({
+  currently: { icon, summary, temperature, apparentTemperature },
+  daily
+}) => {
+  const today = daily.data[0];
+  const isDayTime = isDayCurrentlyTime(
+    today.sunriseTime,
+    today.sunsetTime,
+    new Date()
+  );
   return (
     <div className="currentWeather">
       <div className="card">
-        <div className="card-header h3 text-center">
-          Current Weather in <small className="text-muted"> {name}</small>
-        </div>
+        <div className="card-header h3 text-center">Current Weather</div>
         <WeatherBox
-          temp={main.temp}
-          description={todaysWeather.main}
-          isDay={true}
-          weatherId={todaysWeather.id}
+          temp={temperature}
+          apparentTemperature={apparentTemperature}
+          description={summary}
+          isDay={isDayTime}
+          icon={icon}
         />
       </div>
     </div>
@@ -25,97 +36,121 @@ const CurrentWeather = ({ name, weather, main }) => {
 };
 
 class ForecastedWeather extends Component {
-  state = {
-    rain: {
-      willRain: false,
-      amount: 0
-    },
-    snow: {
-      willSnow: false,
-      amount: 0
-    },
-    wind: {
-      highWind: true,
-      speed: 0,
-      direction: null
-    },
-    minTemp: null,
-    maxTemp: null
+  static propTypes = {
+    currently: PropTypes.object,
+    hourly: PropTypes.object,
+    daily: PropTypes.object
   };
 
-  componentWillReceiveProps(nextProps) {
-    this.processProps(nextProps.list);
-  }
-
-  processProps(list) {
-    let forecastData = {
-      rain: {
-        willRain: false,
-        amount: 0
+  processHourlyDate(hours, daily) {
+    const today = daily[0];
+    const hoursForForecast = getHoursForForecast(hours);
+    let forecastInfo = {
+      precipitation: {
+        willPrecip: false,
+        amount: null,
+        maxTime: null,
+        startAt: null,
+        type: ""
       },
-      snow: {
-        willSnow: false,
-        amount: 0
+      wind: { speed: 0, direction: null, gust: 0, startAt: null },
+      temps: {
+        minTemp: 200,
+        maxTemp: -100,
+        apparentMin: null,
+        apparentMax: null
       },
-      wind: {
-        speed: 0,
-        direction: 0
-      },
-      minTemp: null,
-      maxTemp: null
+      summary: "",
+      icon: ""
     };
 
-    const forecastItems = list.splice(0, 4);
+    const afterSevenPM = new Date().getHours() > 19;
+    forecastInfo.wind = {
+      speed: today.windSpeed,
+      gust: today.windGust,
+      direction: today.windBearing,
+      startAt: today.windGustTime
+    };
 
-    forecastItems.forEach(forecastBlock => {
-      if (forecastBlock.hasOwnProperty("rain")) {
-        forecastData.rain.willRain = true;
-        forecastData.rain.amount += forecastBlock.rain["3h"];
-      }
-      if (forecastBlock.hasOwnProperty("snow")) {
-        forecastData.snow.willSnow = true;
-        forecastData.snow.amount += forecastBlock.snow["3h"];
-      }
-      if (
-        forecastBlock.hasOwnProperty("wind") &&
-        forecastBlock.wind.speed > forecastData.wind.speed
-      ) {
-        forecastData.wind = {
-          speed: forecastBlock.wind.speed,
-          direction: forecastBlock.wind.deg
-        };
-      }
-      if (
-        forecastData.minTemp === null ||
-        forecastBlock.main.temp_min < forecastData.minTemp
-      ) {
-        forecastData.minTemp = forecastBlock.main.temp_min;
-      }
-      if (
-        forecastData.maxTemp === null ||
-        forecastBlock.main.temp_max > forecastData.maxTemp
-      ) {
-        forecastData.maxTemp = forecastBlock.main.temp_max;
-      }
-    });
+    forecastInfo.summary = today.summary;
+    forecastInfo.icon = today.icon;
 
-    this.setState({
-      ...forecastData
-    });
+    if (today.hasOwnProperty("precipType")) {
+      forecastInfo.precipitation = {
+        willPrecip: true,
+        amount: today.precipAccumulation,
+        maxTime: today.precipIntensityMaxTime,
+        type: today.precipType,
+        probability: today.precipProbability
+      };
+    }
+    if (!afterSevenPM) {
+      for (let hour of hoursForForecast) {
+        if (
+          forecastInfo.precipitation.startAt !== null &&
+          hour.hasOwnProperty("precipType")
+        ) {
+          forecastInfo.precipitation.startAt = hour.time;
+        }
+      }
+      forecastInfo.temps.minTemp = today.temperatureMin;
+      forecastInfo.temps.apparentMin = today.apparentTemperatureMin;
+      forecastInfo.temps.maxTemp = today.temperatureMax;
+      forecastInfo.temps.apparentMax = today.apparentTemperatureMax;
+    }
+    if (afterSevenPM) {
+      for (let hour of hoursForForecast) {
+        // wind
+        if (
+          hour.windGust > 14
+          // || (this.context.useMetic && hour.windGust > 6.2)
+        ) {
+          forecastInfo.wind.startAt = hour.time;
+        }
+        if (forecastInfo.wind.windGust < hour.windGust) {
+          forecastInfo.wind = {
+            speed: hour.windSpeed,
+            gust: hour.windGust,
+            direction: hour.windBearing,
+            maxTime: hour.time
+          };
+        }
+
+        // precipitation
+        if (hour.hasOwnProperty("precipType")) {
+          if (hour.hasOwnProperty("precipType")) {
+            if (forecastInfo.precipitation.startAt !== null) {
+              forecastInfo.precipitation.startAt = hour.time;
+              forecastInfo.precipitation.willPrecip = true;
+              forecastInfo.precipitation.type = hour.precipType;
+            }
+            forecastInfo.precipitation.amount += hour.precipAccumulation;
+          }
+        }
+      }
+    }
+    return forecastInfo;
   }
 
   render() {
-    const { rain, snow, wind, minTemp, maxTemp } = this.state;
-    return minTemp === null ? null : (
+    const { daily, hourly } = this.props;
+    if (daily === null) {
+      return null;
+    }
+    const dailyForecast = daily.data[0];
+    const hourlyData = this.processHourlyDate(
+      hourly.data,
+      daily.data.slice(0, 2)
+    );
+    return (
       <div className="forecastedWeather">
         <div className="card">
           <ul className="list-group list-group-flush">
             <div className="card-header h3 text-center">
               Forecast <small className="text-muted">- 12 Hours</small>
             </div>
-            <MinMaxTempDisplay minTemp={minTemp} maxTemp={maxTemp} />
-            <PrecipitationWarning rain={rain} snow={snow} />
-            <WindWarning {...wind} />
+            <FutureWeatherBox {...hourlyData} />
+            <PrecipitationWarning {...hourlyData.precipitation} />
           </ul>
         </div>
       </div>
@@ -123,43 +158,72 @@ class ForecastedWeather extends Component {
   }
 }
 
-const MinMaxTempDisplay = ({ minTemp, maxTemp }) => {
-  return (
-    <li className="list-group-item temperaturesDisplay">
-      <i className="wi wi-thermometer" />
-      <div className="temperaturesDisplay-temps">
-        <TempDisplay temp={minTemp} label="Min" />
-        <TempDisplay temp={maxTemp} label="Max" />
+const Alerts = ({ alerts }) => {
+  if (typeof alerts !== "undefined") {
+    const alertList = alerts.map(alert => (
+      <WeatherAlert {...alert} key={alert.title} />
+    ));
+    return (
+      <div className="weatherAlert">
+        <div className="card">
+          <div className="card-header h3 text-center">Severe Weather Alert</div>
+          <div className="list-group list-group-flush">{alertList}</div>
+        </div>
       </div>
+    );
+  } else {
+    return null;
+  }
+};
+
+const WeatherAlert = ({ description, expires, title, severity }) => {
+  if (typeof description === "undefined") {
+    return null;
+  }
+  const expiresTime = getDateTime(expires).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+  return (
+    <li className="list-group-item">
+      <h5 className="card-title">{title}</h5>
+      <h5 className="card-text">Expires at {expiresTime}</h5>
     </li>
   );
 };
 
 const PrecipitationWarning = (
-  { rain, snow, rain: { willRain }, snow: { willSnow } },
+  { willPrecip, amount, maxTime, startAt, type },
   context
 ) => {
-  if (!willRain && !willSnow) {
+  if (!willPrecip) {
     return null;
   } else {
-    const title = `Prepare for ${willRain ? "Rain" : ""}${willRain && willSnow
-      ? " and "
-      : ""}${willSnow ? "Snow" : ""}`;
-    const getAccumulationAmount = useMetic => {
-      const amount = rain.amount + snow.amount;
-      if (useMetic) {
-        return `${amount.toFixed(2)} mm`;
-      } else {
-        return `${(amount * 0.0393701).toFixed(2)} inches`;
-      }
-    };
-    const displayAmount = getAccumulationAmount(context.useMetic);
+    const title = `Prepare for ${type}`;
+    let displayAmount = null;
+    if (context.useMetic) {
+      displayAmount = `${(amount * 2.54).toFixed(2)} cm`;
+    } else {
+      displayAmount = `${amount.toFixed(2)}"`;
+    }
+    let timeDisplay = null;
+    if (startAt !== null)
+      timeDisplay = getDateTime(startAt).toLocaleTimeString("en-US", {
+        hour12: true,
+        hour: "numeric"
+      });
+
+    const iconClass = type === "rain" ? "umbrella" : "snow";
     return (
       <li className="precipitationDisplay list-group-item">
         <div className="precipitationDisplay-container list-group-item">
-          <h4>Prepare for Precipitation!</h4>
-          <i className="wi wi-umbrella" />
-          <h5>{displayAmount}</h5>
+          <h4 className="precipitationDisplay-title">{title}</h4>
+          <i className={`wi pb-2 wi-${iconClass}`} />
+          <h5>
+            {displayAmount} starting @ {timeDisplay}
+          </h5>
         </div>
       </li>
     );
@@ -179,9 +243,9 @@ const WindWarning = ({ speed, direction }, context) => {
     const windDisplay = getWindDirectionDisplay(direction);
     const getWindSpeed = useMetic => {
       if (useMetic) {
-        return `${speed.toFixed(1)} m/s`;
+        return `${(speed * 0.447).toFixed(1)} m/s`;
       } else {
-        return `${(speed * 2.23694).toFixed(1)} mph`;
+        return `${speed.toFixed(1)} mph`;
       }
     };
     return (
@@ -208,24 +272,22 @@ WindWarning.contextTypes = {
   useMetic: PropTypes.bool
 };
 
-const TempDisplay = ({ temp, label = "" }, context) => {
-  const iconClass = `wi wi-${context.useMetic ? "celsius" : "fahrenheit"}`;
-  const displayLabel =
-    label !== "" ? <small className="text-muted">{label}</small> : null;
-  const getTemp = (temp, useMetic) => {
-    if (useMetic) {
-      return temp - 273;
-    } else {
-      return 1.8 * (temp - 273) + 32;
-    }
-  };
-  const displayTemp = getTemp(temp, context.useMetic);
+const TempDisplay = ({ temp, label = "", alt = null }, context) => {
+  const { useMetic } = context;
+  const iconClass = `wi wi-${useMetic ? "celsius" : "fahrenheit"}`;
+  const displayLabel = label !== "" ? <small>{label}</small> : null;
   return (
     <span className="temperatureDisplay">
-      <h3 className="">
-        {displayLabel} {Math.round(displayTemp)}
+      <h3 className="temperatureDisplay-temp">
+        {displayLabel} {tempForDisplay(temp, useMetic)}
       </h3>
       <i className={iconClass} />
+      {alt === null ? null : (
+        <small className="temperatureDisplay-apparentTemp ml-2">
+          ({tempForDisplay(alt, useMetic)}
+          <i className={iconClass} />)
+        </small>
+      )}
     </span>
   );
 };
@@ -234,17 +296,49 @@ TempDisplay.contextTypes = {
   useMetic: PropTypes.bool
 };
 
-const WeatherBox = ({ isDay, weatherId, temp, description }) => {
+const WeatherBox = ({
+  isDay,
+  icon,
+  temp,
+  description,
+  apparentTemperature
+}) => {
   const dayTime = isDay ? "day" : "night";
   return (
     <div className={`weatherIcon weatherIcon-${dayTime}`}>
-      <i className={`wi wi-owm-${dayTime}-${weatherId}`} />
+      <h3 className="weatherTitle">{description}</h3>
+      <i className={`wi wi-forecast-io-${icon}`} />
       <div className="weatherInfo">
-        <h3 className="weatherTitle">{description}</h3>
         <TempDisplay temp={temp} />
+        {apparentTemperature ? (
+          <TempDisplay temp={apparentTemperature} label="Feels Like" />
+        ) : null}
       </div>
     </div>
   );
 };
 
-export { CurrentWeather, ForecastedWeather };
+const FutureWeatherBox = ({
+  precipitation,
+  wind,
+  temps: { minTemp, maxTemp, apparentMin, apparentMax },
+  summary,
+  icon
+}) => {
+  const tempStyle = getTemperatureScaleStyle(apparentMin, apparentMax);
+  return (
+    <div style={tempStyle} className={`weatherIcon weatherIcon-future`}>
+      <h3 className="weatherTitle">{summary}</h3>
+      <i className={`wi wi-forecast-io-${icon}`} />
+      <div className="weatherInfo">
+        <i className="wi wi-thermometer" />
+        <div className="temperaturesDisplay-temps">
+          <TempDisplay temp={maxTemp} label="Max" alt={apparentMax} />
+          <TempDisplay temp={minTemp} label="Min" alt={apparentMin} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export { CurrentWeather, ForecastedWeather, Alerts };
