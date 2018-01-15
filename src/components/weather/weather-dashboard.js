@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import weatherData from "../../data/weather.json";
-import forecastData from "../../data/forecast.json";
-import { CurrentWeather, ForecastedWeather } from "./weather-display";
+import { CurrentWeather, ForecastedWeather, Alerts } from "./weather-display";
 
 export default class WeatherDashboard extends Component {
   static propTypes = {
@@ -16,15 +15,18 @@ export default class WeatherDashboard extends Component {
   };
 
   state = {
-    weatherData: null,
-    forecastData: null
+    weatherData: null
+  };
+
+  static contextTypes = {
+    toggleMetric: PropTypes.func,
+    useMetic: PropTypes.bool
   };
 
   componentWillMount() {
     if (this.props.useLocalData) {
       this.setState({
-        weatherData: weatherData,
-        forecastData: forecastData
+        weatherData: weatherData
       });
     }
   }
@@ -49,37 +51,22 @@ export default class WeatherDashboard extends Component {
   }
 
   updateWeather(latitude, longitude) {
-    this.fetchLocalWeather(latitude, longitude).then(weatherData => {
+    this.fetchWeather(latitude, longitude).then(weatherData => {
       this.setState({
         weatherData: weatherData
       });
     });
-    this.fetchLocalForecast(latitude, longitude).then(forecastData => {
-      this.setState({
-        forecastData: forecastData
-      });
-    });
   }
 
-  fetchLocalForecast = (latitude, longitude) => {
+  fetchWeather = (latitude, longitude) => {
+    const proxyUrl = "https://peaceful-badlands-31479.herokuapp.com/";
     const url =
-      "http://api.openweathermap.org/data/2.5/forecast?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&";
-    const byLocation = `lat=${latitude}&lon=${longitude}`;
+      "https://api.darksky.net/forecast/360b0fe1e0cddfeab4aad4ca09528007/";
+    const byLocation = `${latitude},${longitude}`;
+    const options = `?exclude=[minutely,flags]&units=us`;
+    // const options = `?exclude=[minutely,flags]&units=${this.context.useMetic ? "si" : "us"}`;
 
-    const forecast = fetch(url + byLocation)
-      .then(res => res.json())
-      .then(json => {
-        return json;
-      });
-    return forecast;
-  };
-
-  fetchLocalWeather = (latitude, longitude) => {
-    const url =
-      "http://api.openweathermap.org/data/2.5/weather?APPID=a3a04842c291ac34b5e04a9b9d12ab8d&";
-    const byLocation = `lat=${latitude}&lon=${longitude}`;
-
-    const weather = fetch(url + byLocation)
+    const weather = fetch(proxyUrl + url + byLocation + options)
       .then(res => res.json())
       .then(json => {
         return json;
@@ -89,14 +76,15 @@ export default class WeatherDashboard extends Component {
 
   render() {
     const { hasLocation } = this.props;
-    const { weatherData, forecastData } = this.state;
+    const { weatherData } = this.state;
     if ((!this.props.useLocalData && !hasLocation) || weatherData === null) {
       return null;
     }
     return (
       <div className="weatherDashboard">
+        <Alerts alerts={weatherData.alerts} />
         <CurrentWeather {...weatherData} />
-        <ForecastedWeather {...forecastData} />
+        <ForecastedWeather {...weatherData} />
       </div>
     );
   }

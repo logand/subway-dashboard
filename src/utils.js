@@ -1,3 +1,16 @@
+const COLOR_SCALE = {
+  10: "#bd0026",
+  9: "#f03b20",
+  8: "#fd8d3c",
+  7: "#fecc5c",
+  6: "#ffffb2",
+  5: "#a1dab4",
+  4: "#41b6c4",
+  3: "#2c7fb8",
+  2: "#253494",
+  1: "#081354"
+};
+
 const getWindDirectionDisplay = direction => {
   switch (true) {
     case direction >= 350 && direction <= 10:
@@ -54,4 +67,48 @@ const getWindDirectionDisplay = direction => {
   }
 };
 
-export { getWindDirectionDisplay };
+function getDateTime(unixTime) {
+  return new Date(unixTime * 1000);
+}
+
+function isDayCurrentlyTime(unixSunrise, unixSunset, now) {
+  const sunrise = getDateTime(unixSunrise);
+  const sunset = getDateTime(unixSunset);
+  return now > sunrise && now < sunset;
+}
+
+function getTemperatureScaleStyle(minTemp, maxTemp) {
+  const maxColor = COLOR_SCALE[getTempNumber(maxTemp)];
+  const minColor = COLOR_SCALE[getTempNumber(minTemp)];
+  const color = maxTemp < 60 ? "white" : "#333";
+  return {
+    backgroundImage: `linear-gradient(165deg, ${maxColor}, ${minColor})`,
+    color: `${color}`
+  };
+}
+
+function getHoursForForecast(hours) {
+  // const currentHour = new Date().getHours();
+  // const hoursLeftInDay = 24 - currentHour;
+  // const greaterValue = hoursLeftInDay > 12 ? hoursLeftInDay : 8;
+  return hours.slice(0, 12);
+}
+
+function getTempNumber(temp) {
+  if (temp > 100) temp = 100;
+  if (temp < 10) temp = 10;
+  return Math.round(temp / 10);
+}
+
+function tempForDisplay(temp, useMetic) {
+  return Math.round(useMetic ? (temp - 32) * (5 / 9) : temp);
+}
+
+export {
+  getWindDirectionDisplay,
+  getDateTime,
+  isDayCurrentlyTime,
+  getTemperatureScaleStyle,
+  getHoursForForecast,
+  tempForDisplay
+};
