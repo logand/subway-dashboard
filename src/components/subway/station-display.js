@@ -1,46 +1,144 @@
 import React from "react";
 import PropTypes from "prop-types";
+import ToggleSwitchWithLabel from "../shared/label-toggle-switch";
 import { IconPlayArrow } from "../shared/icons";
 
 const StationDisplay = ({ stations }) => {
   const stationsDisplay = stations.map(station => {
     return <Station stationData={station} key={station.id} />;
   });
-  return stationsDisplay;
+  return <div className="stationsContainer">{stationsDisplay}</div>;
 };
 
 const Station = ({ stationData }) => {
   return <ValidStation stationData={stationData} />;
 };
 
-const ValidStation = ({ stationData }) => {
-  const { name, N, S, routes } = stationData;
-  let body = null;
-  const routesDisplay = (
-    <span className="stationRoutes">
-      {routes.map(route => <TrainSymbol route={route} key={route} />)}
-    </span>
-  );
-  if (stationData["last_update"] === null) {
-    body = <div className="text-center h3">No Data Available</div>;
-  } else {
-    const northBound = <RouteList name="Uptown" trains={N} uptown={true} />;
-    const southBound = <RouteList name="Downtown" trains={S} uptown={false} />;
+class ValidStation extends React.Component {
+  state = {
+    isUptown: true,
+    halfStation: false
+  };
+
+  static contextTypes = {
+    limitTrains: PropTypes.bool
+  };
+
+  toggleHalfStation = () => {
+    this.setState({ halfStation: !this.state.halfStation });
+  };
+
+  toggleUptown = () => {
+    this.setState({ isUptown: !this.state.isUptown });
+  };
+
+  getTrains(limitTrains, trainList, routes) {
+    let trains = null;
+    if (!limitTrains) {
+      trains = trainList;
+    } else {
+      let trainCount = [];
+      for (let route of routes) {
+        trainCount[route] = 0;
+      }
+
+      trains = [];
+      for (let train of trainList) {
+        if (trainCount[train.route] < 2) {
+          trains.push(train);
+          trainCount[train.route] += 1;
+        }
+      }
+    }
+    return trains;
+  }
+
+  render() {
+    const { stationData: { name, N, S, routes, id, last_update } } = this.props;
+    let body = null;
+    if (last_update === null) {
+      body = <div className="text-center h3">No Data Available</div>;
+    }
+    const routesDisplay = (
+      <span className="stationRoutes">
+        {routes.map(route => <TrainSymbol route={route} key={route} />)}
+      </span>
+    );
+    const { allTrains, isUptown, halfStation } = this.state;
+    const { limitTrains } = this.context;
+    const northBoundTrains = this.getTrains(limitTrains, N, routes);
+    const southBoundTrains = this.getTrains(limitTrains, S, routes);
+    const northBound =
+      halfStation && !isUptown ? null : (
+        <RouteList name="Uptown" trains={northBoundTrains} uptown={true} />
+      );
+    const southBound =
+      halfStation && isUptown ? null : (
+        <RouteList name="Downtown" trains={southBoundTrains} uptown={false} />
+      );
+    const contolProps = {
+      isUptown: isUptown,
+      halfStation: halfStation,
+      toggleUptown: this.toggleUptown,
+      toggleHalfStation: this.toggleHalfStation
+    };
     body = (
       <div className="card-group">
         {northBound}
         {southBound}
       </div>
     );
-  }
-  return (
-    <div className="card station">
-      <div className="card-header text-center h3">
-        {name} {routesDisplay}
+    const stationClass = `card station ${halfStation
+      ? "station--half"
+      : "station--full"}`;
+    return (
+      <div className={stationClass}>
+        <div className="card-header text-center h3">
+          {name} {routesDisplay} <StationControls {...contolProps} />
+        </div>
+        <div className="card-body">{body}</div>
       </div>
-      <div className="card-body">{body}</div>
+    );
+  }
+}
+
+const StationControls = ({
+  isUptown,
+  toggleUptown,
+  halfStation,
+  toggleHalfStation
+}) => {
+  return (
+    <div className="stationControls mt-2">
+      <ToggleSwitchWithLabel
+        checked={halfStation}
+        onChange={event => {
+          toggleHalfStation();
+        }}
+        prelabel="Full Station"
+        postlabel="Half"
+      />
+      {halfStation ? (
+        <ToggleSwitchWithLabel
+          checked={!isUptown}
+          onChange={event => {
+            toggleUptown();
+          }}
+          prelabel="Uptown"
+          postlabel="Downtown"
+        />
+      ) : null}
     </div>
   );
+};
+
+StationControls.propTypes = {
+  allTrains: PropTypes.bool.isRequired,
+  isUptown: PropTypes.bool.isRequired,
+  halfStation: PropTypes.bool.isRequired,
+  toggleUptown: PropTypes.func.isRequired,
+  toggleTrainLimit: PropTypes.func.isRequired,
+  toggleHalfStation: PropTypes.func.isRequired
 };
 
 const RouteList = ({ name, trains, uptown }) => {

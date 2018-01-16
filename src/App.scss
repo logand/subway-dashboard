@@ -66,6 +66,27 @@ body {
   }
 }
 
+.stationsContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.station {
+  &.station--half {
+    flex: 1;
+  }
+  &.station--full {
+    width: 100%;
+  }
+  .stationControls {
+    font-size: 0.4em;
+
+    .toggleSwitchWithLabel {
+      margin-right: 0.5em;
+    }
+  }
+}
+
 .stationRoutes {
   margin-left: 1em;
 
