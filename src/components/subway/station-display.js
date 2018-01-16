@@ -133,11 +133,9 @@ const StationControls = ({
 };
 
 StationControls.propTypes = {
-  allTrains: PropTypes.bool.isRequired,
   isUptown: PropTypes.bool.isRequired,
   halfStation: PropTypes.bool.isRequired,
   toggleUptown: PropTypes.func.isRequired,
-  toggleTrainLimit: PropTypes.func.isRequired,
   toggleHalfStation: PropTypes.func.isRequired
 };
 
