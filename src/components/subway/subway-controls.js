@@ -49,9 +49,7 @@ class SubwayControls extends React.Component {
       locationDisplay = (
         <span className="locationDisplay locationDisplay--enabled">
           <HasLocationIcon />
-          <p className="locationDisplay-text">
-            Using Current Location @ {location}
-          </p>
+          <p className="locationDisplay-text">Current Location @ {location}</p>
         </span>
       );
     } else {
@@ -103,7 +101,8 @@ class SubwayControls extends React.Component {
               onChange={event => {
                 toggleTrainLimit();
               }}
-              prelabel="All Trains"
+              label="Trains"
+              prelabel="All"
               postlabel="Limit"
             />
           </ul>

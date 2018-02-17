@@ -94,7 +94,8 @@ class ValidStation extends React.Component {
     return (
       <div className={stationClass}>
         <div className="card-header text-center h3">
-          {name} {routesDisplay} <StationControls {...contolProps} />
+          <span className="station-name">{name}</span> {routesDisplay}{" "}
+          <StationControls {...contolProps} />
         </div>
         <div className="card-body">{body}</div>
       </div>
@@ -109,13 +110,14 @@ const StationControls = ({
   toggleHalfStation
 }) => {
   return (
-    <div className="stationControls mt-2">
+    <div className="stationControls">
       <ToggleSwitchWithLabel
         checked={halfStation}
         onChange={event => {
           toggleHalfStation();
         }}
-        prelabel="Full Station"
+        label="Station"
+        prelabel="Full"
         postlabel="Half"
       />
       {halfStation ? (
