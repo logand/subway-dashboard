@@ -12,24 +12,27 @@ class SubwayControls extends React.Component {
     toggleStyle: PropTypes.func.isRequired,
     activeStyle: PropTypes.bool.isRequired,
     hasLocation: PropTypes.bool,
-    toggleMetric: PropTypes.func.isRequired,
-    useMetic: PropTypes.bool.isRequired
+    locationEnabled: PropTypes.bool,
+    location: PropTypes.object,
+    toggleTrainLimit: PropTypes.func
   };
 
   static contextTypes = {
     toggleMetric: PropTypes.func,
-    useMetic: PropTypes.bool
+    useMetic: PropTypes.bool,
+    limitTrains: PropTypes.bool
   };
 
   render() {
     const {
+      toggleTrainLimit,
       toggleStyle,
       activeStyle,
       hasLocation,
       locationEnabled,
       location: { latitude, longitude }
     } = this.props;
-    const { useMetic, toggleMetric } = this.context;
+    const { useMetic, toggleMetric, limitTrains } = this.context;
     let locationDisplay = null;
 
     if (!locationEnabled) {
@@ -46,9 +49,7 @@ class SubwayControls extends React.Component {
       locationDisplay = (
         <span className="locationDisplay locationDisplay--enabled">
           <HasLocationIcon />
-          <p className="locationDisplay-text">
-            Using Current Location @ {location}
-          </p>
+          <p className="locationDisplay-text">Current Location @ {location}</p>
         </span>
       );
     } else {
@@ -92,6 +93,17 @@ class SubwayControls extends React.Component {
               }}
               prelabel="°F"
               postlabel="°C"
+            />
+          </ul>
+          <ul className="navbar-nav">
+            <ToggleSwitchWithLabel
+              checked={limitTrains}
+              onChange={event => {
+                toggleTrainLimit();
+              }}
+              label="Trains"
+              prelabel="All"
+              postlabel="Limit"
             />
           </ul>
           <ul className="navbar-nav">{locationDisplay}</ul>

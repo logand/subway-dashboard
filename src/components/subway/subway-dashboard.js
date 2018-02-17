@@ -24,16 +24,19 @@ export default class SubwayDashboard extends React.Component {
     isDark: false,
     timeout: 30000,
     enabled: true,
-    comparisonTime: Date.now()
+    comparisonTime: Date.now(),
+    limitTrains: false
   };
 
   static childContextTypes = {
-    comparisonTime: PropTypes.number
+    comparisonTime: PropTypes.number,
+    limitTrains: PropTypes.bool
   };
 
   getChildContext() {
     return {
-      comparisonTime: this.state.comparisonTime
+      comparisonTime: this.state.comparisonTime,
+      limitTrains: this.state.limitTrains
     };
   }
 
@@ -63,6 +66,10 @@ export default class SubwayDashboard extends React.Component {
     }
   }
 
+  toggleTrainLimit = () => {
+    this.setState({ limitTrains: !this.state.limitTrains });
+  };
+
   updateStations(latitude, longitude) {
     this.fetchLocalStations(latitude, longitude).then(stations => {
       this.setState({
@@ -90,7 +97,7 @@ export default class SubwayDashboard extends React.Component {
   };
 
   render() {
-    const { stations, darkStyle, timeout, enabled } = this.state;
+    const { stations, darkStyle, timeout, enabled, limitTrains } = this.state;
     const {
       locationEnabled,
       hasLocation,
@@ -109,8 +116,7 @@ export default class SubwayDashboard extends React.Component {
           hasLocation={hasLocation}
           locationEnabled={locationEnabled}
           location={location}
-          useMetic={useMetic}
-          toggleMetric={toggleMetric}
+          toggleTrainLimit={this.toggleTrainLimit}
         />
         <StationDisplay stations={stations} />
         <ReactInterval

@@ -66,9 +66,39 @@ body {
   }
 }
 
-.stationRoutes {
-  margin-left: 1em;
+.stationsContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
 
+.station {
+  &.station--half {
+    flex: 1;
+  }
+  &.station--full {
+    width: 100%;
+  }
+  .stationControls {
+    font-size: 0.4em;
+    display: flex;
+    align-items: center;
+
+    .toggleSwitchWithLabel {
+      margin-right: 0.5em;
+    }
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: center;
+
+    > :not(:first-child) {
+      margin-left: 0.75em;
+    }
+  }
+}
+
+.stationRoutes {
   :not(:first-child) {
     margin-left: 0.25em;
   }
@@ -281,6 +311,19 @@ body {
 
 /* Toggle Switch Styling */
 .toggleSwitchWithLabel {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+  .toggleSwitchWithLabel-label {
+    font-weight: bold;
+  }
+
+  .toggleSwitchWithLabel-switch {
+    display: flex;
+    align-items: center;
+  }
+
   .toggleSwitchWithLabel-prelabel {
     margin-right: 0.5em;
   }

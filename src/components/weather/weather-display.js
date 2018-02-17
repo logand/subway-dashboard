@@ -50,7 +50,6 @@ class ForecastedWeather extends Component {
         willPrecip: false,
         amount: null,
         maxTime: null,
-        startAt: null,
         type: ""
       },
       wind: { speed: 0, direction: null, gust: 0, startAt: null },
@@ -69,7 +68,7 @@ class ForecastedWeather extends Component {
       speed: today.windSpeed,
       gust: today.windGust,
       direction: today.windBearing,
-      startAt: today.windGustTime
+      maxAt: today.windGustTime
     };
 
     forecastInfo.summary = today.summary;
@@ -101,12 +100,6 @@ class ForecastedWeather extends Component {
     if (afterSevenPM) {
       for (let hour of hoursForForecast) {
         // wind
-        if (
-          hour.windGust > 14
-          // || (this.context.useMetic && hour.windGust > 6.2)
-        ) {
-          forecastInfo.wind.startAt = hour.time;
-        }
         if (forecastInfo.wind.windGust < hour.windGust) {
           forecastInfo.wind = {
             speed: hour.windSpeed,
@@ -151,6 +144,7 @@ class ForecastedWeather extends Component {
             </div>
             <FutureWeatherBox {...hourlyData} />
             <PrecipitationWarning {...hourlyData.precipitation} />
+            <WindWarning {...hourlyData.wind} />
           </ul>
         </div>
       </div>
@@ -203,10 +197,12 @@ const PrecipitationWarning = (
   } else {
     const title = `Prepare for ${type}`;
     let displayAmount = null;
-    if (context.useMetic) {
-      displayAmount = `${(amount * 2.54).toFixed(2)} cm`;
-    } else {
-      displayAmount = `${amount.toFixed(2)}"`;
+    if (typeof amount !== "undefined") {
+      if (context.useMetic) {
+        displayAmount = `${(amount * 2.54).toFixed(2)} cm`;
+      } else {
+        displayAmount = `${amount.toFixed(2)}"`;
+      }
     }
     let timeDisplay = null;
     if (startAt !== null)
@@ -234,33 +230,43 @@ PrecipitationWarning.contextTypes = {
   useMetic: PropTypes.bool
 };
 
-const WindWarning = ({ speed, direction }, context) => {
-  if (direction === null || speed < 6) {
+const WindWarning = ({ speed, direction, gust, maxAt }, context) => {
+  if (gust < 15) {
     return null;
   } else {
-    const windDescription = speed > 8 ? "Howling Winds!" : "Light Winds Ahead";
+    const windDescription =
+      Math.abs(gust - speed) > 8 ? "Heavy Wind Gusts" : "High Winds!";
     const windDirection = Math.floor(direction);
     const windDisplay = getWindDirectionDisplay(direction);
-    const getWindSpeed = useMetic => {
+    const getWindSpeed = (useMetic, windSpeed) => {
       if (useMetic) {
-        return `${(speed * 0.447).toFixed(1)} m/s`;
+        return `${(windSpeed * 0.447).toFixed(1)} m/s`;
       } else {
-        return `${speed.toFixed(1)} mph`;
+        return `${windSpeed.toFixed(1)} mph`;
       }
     };
+    const timeDisplay = getDateTime(maxAt).toLocaleTimeString("en-US", {
+      hour12: true,
+      hour: "numeric"
+    });
     return (
       <li className="windDisplay list-group-item">
         <h4>{windDescription}</h4>
-        <span className="windDisplay-indicators">
+        <span className="windDisplay-indicators text-center">
           <div className="windIndicator windIndicator-speed">
             <i className="wi wi-strong-wind" />
-            <h5>{getWindSpeed(context.useMetic)}</h5>
+            <h5>Avg {getWindSpeed(context.useMetic, speed)}</h5>
+            <h5>
+              Gusts to {getWindSpeed(context.useMetic, gust)} @ {timeDisplay}
+            </h5>
           </div>
           <div className="windIndicator windIndicator-direction">
             <div className="windIndicator-spinner">
-              <i className={`wi wi-wind towards-${windDirection}-deg`} />
+              <i className={`wi wi-wind from-${windDirection}-deg`} />
             </div>
-            <p className="lead">{windDisplay}</p>
+            <p className="lead">
+              <small>From</small> {windDisplay}
+            </p>
           </div>
         </span>
       </li>
