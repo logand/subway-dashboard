@@ -89,7 +89,7 @@ export default class SubwayDashboard extends React.Component {
 
   clearStationTimer() {
     if (this.state.stationTimerId) {
-      clearTimeout(this.stationTimerId);
+      clearTimeout(this.state.stationTimerId);
     }
   };
 
