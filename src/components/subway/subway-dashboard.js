@@ -25,7 +25,8 @@ export default class SubwayDashboard extends React.Component {
     timeout: 30000,
     enabled: true,
     comparisonTime: Date.now(),
-    limitTrains: false
+    limitTrains: false,
+    stationTimerId: null
   };
 
   static childContextTypes = {
@@ -63,12 +64,23 @@ export default class SubwayDashboard extends React.Component {
       (oldLatitude !== latitude || oldLongitude !== longitude)
     ) {
       this.updateStations(latitude, longitude);
+      this.setStationTimer();
     }
   }
 
   toggleTrainLimit = () => {
     this.setState({ limitTrains: !this.state.limitTrains });
   };
+
+  setStationTimer = () => {
+    const stationTimerId = setTimeout(this.setStationTimer, 30000);
+    console.log(stationTimerId);
+    this.setState({ stationTimerId });
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.state.stationTimerId);
+  }
 
   updateStations(latitude, longitude) {
     this.fetchLocalStations(latitude, longitude).then(stations => {
