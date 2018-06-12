@@ -19,7 +19,7 @@ class SubwayControls extends React.Component {
 
   static contextTypes = {
     toggleMetric: PropTypes.func,
-    useMetic: PropTypes.bool,
+    useMetric: PropTypes.bool,
     limitTrains: PropTypes.bool
   };
 
@@ -32,7 +32,7 @@ class SubwayControls extends React.Component {
       locationEnabled,
       location: { latitude, longitude }
     } = this.props;
-    const { useMetic, toggleMetric, limitTrains } = this.context;
+    const { useMetric, toggleMetric, limitTrains } = this.context;
     let locationDisplay = null;
 
     if (!locationEnabled) {
@@ -87,7 +87,7 @@ class SubwayControls extends React.Component {
           </ul>
           <ul className="navbar-nav">
             <ToggleSwitchWithLabel
-              checked={useMetic}
+              checked={useMetric}
               onChange={event => {
                 toggleMetric();
               }}

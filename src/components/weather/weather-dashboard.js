@@ -20,7 +20,7 @@ export default class WeatherDashboard extends Component {
 
   static contextTypes = {
     toggleMetric: PropTypes.func,
-    useMetic: PropTypes.bool
+    useMetric: PropTypes.bool
   };
 
   componentWillMount() {
@@ -64,7 +64,7 @@ export default class WeatherDashboard extends Component {
       "https://api.darksky.net/forecast/360b0fe1e0cddfeab4aad4ca09528007/";
     const byLocation = `${latitude},${longitude}`;
     const options = `?exclude=[minutely,flags]&units=us`;
-    // const options = `?exclude=[minutely,flags]&units=${this.context.useMetic ? "si" : "us"}`;
+    // const options = `?exclude=[minutely,flags]&units=${this.context.useMetric ? "si" : "us"}`;
 
     const weather = fetch(proxyUrl + url + byLocation + options)
       .then(res => res.json())
