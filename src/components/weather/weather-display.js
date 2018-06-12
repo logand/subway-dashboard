@@ -198,7 +198,7 @@ const PrecipitationWarning = (
     const title = `Prepare for ${type}`;
     let displayAmount = null;
     if (typeof amount !== "undefined") {
-      if (context.useMetic) {
+      if (context.useMetric) {
         displayAmount = `${(amount * 2.54).toFixed(2)} cm`;
       } else {
         displayAmount = `${amount.toFixed(2)}"`;
@@ -227,7 +227,7 @@ const PrecipitationWarning = (
 };
 
 PrecipitationWarning.contextTypes = {
-  useMetic: PropTypes.bool
+  useMetric: PropTypes.bool
 };
 
 const WindWarning = ({ speed, direction, gust, maxAt }, context) => {
@@ -238,8 +238,8 @@ const WindWarning = ({ speed, direction, gust, maxAt }, context) => {
       Math.abs(gust - speed) > 8 ? "Heavy Wind Gusts" : "High Winds!";
     const windDirection = Math.floor(direction);
     const windDisplay = getWindDirectionDisplay(direction);
-    const getWindSpeed = (useMetic, windSpeed) => {
-      if (useMetic) {
+    const getWindSpeed = (useMetric, windSpeed) => {
+      if (useMetric) {
         return `${(windSpeed * 0.447).toFixed(1)} m/s`;
       } else {
         return `${windSpeed.toFixed(1)} mph`;
@@ -255,9 +255,9 @@ const WindWarning = ({ speed, direction, gust, maxAt }, context) => {
         <span className="windDisplay-indicators text-center">
           <div className="windIndicator windIndicator-speed">
             <i className="wi wi-strong-wind" />
-            <h5>Avg {getWindSpeed(context.useMetic, speed)}</h5>
+            <h5>Avg {getWindSpeed(context.useMetric, speed)}</h5>
             <h5>
-              Gusts to {getWindSpeed(context.useMetic, gust)} @ {timeDisplay}
+              Gusts to {getWindSpeed(context.useMetric, gust)} @ {timeDisplay}
             </h5>
           </div>
           <div className="windIndicator windIndicator-direction">
@@ -275,22 +275,22 @@ const WindWarning = ({ speed, direction, gust, maxAt }, context) => {
 };
 
 WindWarning.contextTypes = {
-  useMetic: PropTypes.bool
+  useMetric: PropTypes.bool
 };
 
 const TempDisplay = ({ temp, label = "", alt = null }, context) => {
-  const { useMetic } = context;
-  const iconClass = `wi wi-${useMetic ? "celsius" : "fahrenheit"}`;
+  const { useMetric } = context;
+  const iconClass = `wi wi-${useMetric ? "celsius" : "fahrenheit"}`;
   const displayLabel = label !== "" ? <small>{label}</small> : null;
   return (
     <span className="temperatureDisplay">
       <h3 className="temperatureDisplay-temp">
-        {displayLabel} {tempForDisplay(temp, useMetic)}
+        {displayLabel} {tempForDisplay(temp, useMetric)}
       </h3>
       <i className={iconClass} />
       {alt === null ? null : (
         <small className="temperatureDisplay-apparentTemp ml-2">
-          ({tempForDisplay(alt, useMetic)}
+          ({tempForDisplay(alt, useMetric)}
           <i className={iconClass} />)
         </small>
       )}
@@ -299,7 +299,7 @@ const TempDisplay = ({ temp, label = "", alt = null }, context) => {
 };
 
 TempDisplay.contextTypes = {
-  useMetic: PropTypes.bool
+  useMetric: PropTypes.bool
 };
 
 const WeatherBox = ({

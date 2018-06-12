@@ -15,7 +15,7 @@ export default class SubwayDashboard extends React.Component {
       longitude: PropTypes.number
     }),
     toggleMetric: PropTypes.func.isRequired,
-    useMetic: PropTypes.bool.isRequired
+    useMetric: PropTypes.bool.isRequired
   };
 
   state = {
@@ -102,7 +102,7 @@ export default class SubwayDashboard extends React.Component {
       locationEnabled,
       hasLocation,
       location,
-      useMetic,
+      useMetric,
       toggleMetric
     } = this.props;
     const styleClass = darkStyle
