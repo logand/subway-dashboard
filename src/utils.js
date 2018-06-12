@@ -100,8 +100,8 @@ function getTempNumber(temp) {
   return Math.round(temp / 10);
 }
 
-function tempForDisplay(temp, useMetic) {
-  return Math.round(useMetic ? (temp - 32) * (5 / 9) : temp);
+function tempForDisplay(temp, useMetric) {
+  return Math.round(useMetric ? (temp - 32) * (5 / 9) : temp);
 }
 
 export {

@@ -11,7 +11,7 @@ class Dashboard extends Component {
   };
 
   state = {
-    useMetic: false,
+    useMetric: false,
     locationEnabled: false,
     hasLocation: false,
     location: {
@@ -25,14 +25,14 @@ class Dashboard extends Component {
   };
 
   static childContextTypes = {
-    useMetic: PropTypes.bool,
+    useMetric: PropTypes.bool,
     toggleMetric: PropTypes.func
   };
 
   getChildContext() {
     return {
       toggleMetric: this.toggleMetric,
-      useMetic: this.state.useMetic
+      useMetric: this.state.useMetric
     };
   }
 
@@ -43,7 +43,7 @@ class Dashboard extends Component {
   }
 
   toggleMetric = () => {
-    this.setState({ useMetic: !this.state.useMetic });
+    this.setState({ useMetric: !this.state.useMetric });
   };
 
   componentWillReceiveProps(nextProps) {
@@ -65,7 +65,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { location, hasLocation, locationEnabled, useMetic } = this.state;
+    const { location, hasLocation, locationEnabled, useMetric } = this.state;
     const { useLocalData } = this.props;
     const locationProps = {
       location: location,
@@ -78,12 +78,12 @@ class Dashboard extends Component {
           useLocalData={useLocalData}
           {...locationProps}
           toggleMetric={this.toggleMetric}
-          useMetic={useMetic}
+          useMetric={useMetric}
         />
         <WeatherDashboard
           useLocalData={useLocalData}
           {...locationProps}
-          useMetic={useMetic}
+          useMetric={useMetric}
         />
       </div>
     );
