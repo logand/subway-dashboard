@@ -26,7 +26,8 @@ export default class SubwayDashboard extends React.Component {
     enabled: true,
     comparisonTime: Date.now(),
     limitTrains: false,
-    stationTimerId: null
+    stationTimerId: null,
+    newestFetchId: 0
   };
 
   static childContextTypes = {
@@ -63,7 +64,6 @@ export default class SubwayDashboard extends React.Component {
       hasLocation &&
       (oldLatitude !== latitude || oldLongitude !== longitude)
     ) {
-      this.clearStationTimer();
       this.updateStations(latitude, longitude);
     }
   }
@@ -77,19 +77,27 @@ export default class SubwayDashboard extends React.Component {
   }
 
   updateStations(latitude, longitude) {
+    this.clearStationTimer();
+    const fetchId = this.state.newestFetchId + 1;
+    this.setState({newestFetchId: fetchId});
     this.fetchLocalStations(latitude, longitude).then(stations => {
-      const stationTimerId = setTimeout(this.updateStations.bind(this), 30000, latitude, longitude);
-      this.setState({
-        stations: stations.data,
-        lastUpdated: stations.updated,
-        stationTimerId: stationTimerId
-      });
+      if (fetchId === this.state.newestFetchId) {
+        const stationTimerId = setTimeout(this.updateStations.bind(this), 10000, latitude, longitude);
+        console.log(`${stationTimerId}, ${latitude}, ${longitude}`);
+        this.setState({
+          stations: stations.data,
+          lastUpdated: stations.updated,
+          stationTimerId: stationTimerId
+        });
+      };
     });
   };
 
   clearStationTimer() {
     if (this.state.stationTimerId) {
-      clearTimeout(this.stationTimerId);
+      console.log("Timer cleared");
+      clearTimeout(this.state.stationTimerId);
+      this.setState({stationTimerId: null});
     }
   };
 
