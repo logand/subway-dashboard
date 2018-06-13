@@ -83,7 +83,6 @@ export default class SubwayDashboard extends React.Component {
     this.fetchLocalStations(latitude, longitude).then(stations => {
       if (fetchId === this.state.newestFetchId) {
         const stationTimerId = setTimeout(this.updateStations.bind(this), 10000, latitude, longitude);
-        console.log(`${stationTimerId}, ${latitude}, ${longitude}`);
         this.setState({
           stations: stations.data,
           lastUpdated: stations.updated,
@@ -95,7 +94,6 @@ export default class SubwayDashboard extends React.Component {
 
   clearStationTimer() {
     if (this.state.stationTimerId) {
-      console.log("Timer cleared");
       clearTimeout(this.state.stationTimerId);
       this.setState({stationTimerId: null});
     }
