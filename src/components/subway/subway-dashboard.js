@@ -25,7 +25,8 @@ export default class SubwayDashboard extends React.Component {
     timeout: 30000,
     enabled: true,
     comparisonTime: Date.now(),
-    limitTrains: false
+    limitTrains: false,
+    stationTimerId: null
   };
 
   static childContextTypes = {
@@ -62,6 +63,7 @@ export default class SubwayDashboard extends React.Component {
       hasLocation &&
       (oldLatitude !== latitude || oldLongitude !== longitude)
     ) {
+      this.clearStationTimer();
       this.updateStations(latitude, longitude);
     }
   }
@@ -70,14 +72,26 @@ export default class SubwayDashboard extends React.Component {
     this.setState({ limitTrains: !this.state.limitTrains });
   };
 
+  componentWillUnmount() {
+    this.clearStationTimer();
+  }
+
   updateStations(latitude, longitude) {
     this.fetchLocalStations(latitude, longitude).then(stations => {
+      const stationTimerId = setTimeout(this.updateStations.bind(this), 30000, latitude, longitude);
       this.setState({
         stations: stations.data,
-        lastUpdated: stations.updated
+        lastUpdated: stations.updated,
+        stationTimerId: stationTimerId
       });
     });
-  }
+  };
+
+  clearStationTimer() {
+    if (this.state.stationTimerId) {
+      clearTimeout(this.state.stationTimerId);
+    }
+  };
 
   fetchLocalStations = (latitude, longitude) => {
     const url = "https://mighty-wildwood-28716.herokuapp.com/";

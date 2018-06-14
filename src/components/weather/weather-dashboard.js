@@ -15,7 +15,9 @@ export default class WeatherDashboard extends Component {
   };
 
   state = {
-    weatherData: null
+    weatherData: null,
+    weatherTimerId: null,
+    newestFetchId: 0
   };
 
   static contextTypes = {
@@ -50,12 +52,30 @@ export default class WeatherDashboard extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.clearWeatherTimer();
+  }
+
   updateWeather(latitude, longitude) {
+    this.clearWeatherTimer();
+    const fetchId = this.state.newestFetchId + 1;
+    this.setState({newestFetchId: fetchId});
     this.fetchWeather(latitude, longitude).then(weatherData => {
-      this.setState({
-        weatherData: weatherData
-      });
+      if (fetchId === this.state.newestFetchId) {
+        const weatherTimerId = setTimeout(this.updateWeather.bind(this), 600000, latitude, longitude);
+        this.setState({
+          weatherData: weatherData,
+          weatherTimerId: weatherTimerId
+        });
+      };
     });
+  }
+  
+  clearWeatherTimer() {
+    if (this.state.weatherTimerId) {
+      clearTimeout(this.state.weatherTimerId);
+      this.setState({weatherTimerId: null});
+    }
   }
 
   fetchWeather = (latitude, longitude) => {
