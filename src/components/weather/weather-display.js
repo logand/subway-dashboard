@@ -42,12 +42,12 @@ class ForecastedWeather extends Component {
     daily: PropTypes.object
   };
 
-  processHourlyDate(hours, daily) {
+  processHourlyData(hours, daily) {
     const today = daily[0];
     const hoursForForecast = getHoursForForecast(hours);
     let forecastInfo = {
       precipitation: {
-        willPrecip: false,
+        precipLikely: false,
         amount: null,
         maxTime: null,
         type: ""
@@ -74,14 +74,17 @@ class ForecastedWeather extends Component {
     forecastInfo.summary = today.summary;
     forecastInfo.icon = today.icon;
 
+    // 
     if (today.hasOwnProperty("precipType")) {
       forecastInfo.precipitation = {
-        willPrecip: true,
         amount: today.precipAccumulation,
         maxTime: today.precipIntensityMaxTime,
         type: today.precipType,
         probability: today.precipProbability
       };
+      if (today.precipProbability > 0.25) {
+        forecastInfo.precipitation.precipLikely = true;
+      }
     }
     if (!afterSevenPM) {
       for (let hour of hoursForForecast) {
@@ -111,13 +114,13 @@ class ForecastedWeather extends Component {
 
         // precipitation
         if (hour.hasOwnProperty("precipType")) {
-          if (hour.hasOwnProperty("precipType")) {
-            if (forecastInfo.precipitation.startAt !== null) {
-              forecastInfo.precipitation.startAt = hour.time;
-              forecastInfo.precipitation.willPrecip = true;
-              forecastInfo.precipitation.type = hour.precipType;
-            }
-            forecastInfo.precipitation.amount += hour.precipAccumulation;
+          if (forecastInfo.precipitation.startAt !== null) {
+            forecastInfo.precipitation.startAt = hour.time;
+            forecastInfo.precipitation.type = hour.precipType;
+          }
+          forecastInfo.precipitation.amount += hour.precipAccumulation;
+          if (hour.precipProbability > 0.25) {
+            forecastInfo.precipitation.precipLikely = true;
           }
         }
       }
@@ -131,7 +134,7 @@ class ForecastedWeather extends Component {
       return null;
     }
     const dailyForecast = daily.data[0];
-    const hourlyData = this.processHourlyDate(
+    const hourlyData = this.processHourlyData(
       hourly.data,
       daily.data.slice(0, 2)
     );
@@ -189,10 +192,10 @@ const WeatherAlert = ({ description, expires, title, severity }) => {
 };
 
 const PrecipitationWarning = (
-  { willPrecip, amount, maxTime, startAt, type },
+  { precipLikely, amount, maxTime, startAt, type },
   context
 ) => {
-  if (!willPrecip) {
+  if (!precipLikely) {
     return null;
   } else {
     const title = `Prepare for ${type}`;
