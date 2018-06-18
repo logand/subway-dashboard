@@ -27,7 +27,7 @@ export default class SubwayDashboard extends React.Component {
     comparisonTime: Date.now(),
     limitTrains: false,
     stationTimerId: null,
-    newestFetchId: 0
+    currentRequestCounter: 0
   };
 
   static childContextTypes = {
@@ -76,12 +76,13 @@ export default class SubwayDashboard extends React.Component {
     this.clearStationTimer();
   }
 
+  // currentRequestCounter gives a unique id to each async fetch request to check if a new one has been started before the previous one finishes
   updateStations(latitude, longitude) {
     this.clearStationTimer();
-    const fetchId = this.state.newestFetchId + 1;
-    this.setState({newestFetchId: fetchId});
+    const currentRequestCounter = this.state.currentRequestCounter + 1;
+    this.setState({currentRequestCounter});
     this.fetchLocalStations(latitude, longitude).then(stations => {
-      if (fetchId === this.state.newestFetchId) {
+      if (currentRequestCounter === this.state.currentRequestCounter) {
         const stationTimerId = setTimeout(this.updateStations.bind(this), 10000, latitude, longitude);
         this.setState({
           stations: stations.data,
