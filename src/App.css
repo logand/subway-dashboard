@@ -147,10 +147,31 @@ body {
       .dashboard .weatherDashboard {
         width: 300px; } }
 
-.stationRoutes {
-  margin-left: 1em; }
-  .stationRoutes :not(:first-child) {
-    margin-left: 0.25em; }
+.stationsContainer {
+  display: flex;
+  flex-wrap: wrap; }
+
+.station.station--half {
+  flex: 1; }
+
+.station.station--full {
+  width: 100%; }
+
+.station .stationControls {
+  font-size: 0.4em;
+  display: flex;
+  align-items: center; }
+  .station .stationControls .toggleSwitchWithLabel {
+    margin-right: 0.5em; }
+
+.station .card-header {
+  display: flex;
+  justify-content: center; }
+  .station .card-header > :not(:first-child) {
+    margin-left: 0.75em; }
+
+.stationRoutes :not(:first-child) {
+  margin-left: 0.25em; }
 
 .train {
   display: flex;
@@ -300,8 +321,17 @@ body {
   display: flex; }
 
 /* Toggle Switch Styling */
-.toggleSwitchWithLabel .toggleSwitchWithLabel-prelabel {
-  margin-right: 0.5em; }
+.toggleSwitchWithLabel {
+  align-items: center;
+  display: flex;
+  flex-direction: column; }
+  .toggleSwitchWithLabel .toggleSwitchWithLabel-label {
+    font-weight: bold; }
+  .toggleSwitchWithLabel .toggleSwitchWithLabel-switch {
+    display: flex;
+    align-items: center; }
+  .toggleSwitchWithLabel .toggleSwitchWithLabel-prelabel {
+    margin-right: 0.5em; }
 
 /* Navbar Styling */
 .navbar .navbar-collapse > :nth-child(n) {
